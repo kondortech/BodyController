@@ -1,9 +1,0 @@
-syntax = "proto3";
-
-
-option go_package = "/proto";
-
-message UserRegistered {
-  int32 userId = 1;
-  string email = 2;
-}

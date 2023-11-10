@@ -2,11 +2,13 @@ package main
 
 import (
 	"context"
-	"google.golang.org/grpc"
 	"log"
 	"net"
 
-	pb "github.com/kirvader/BodyController/services/food/ingredient/proto"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
+
+	pb "github.com/kirvader/BodyController/services/nutrition/ingredient/proto"
 )
 
 type server struct {
@@ -31,7 +33,12 @@ func main() {
 	}
 
 	s := grpc.NewServer()
+
+	// TODO make it depend on the way of using it
+	reflection.Register(s)
+
 	pb.RegisterInventoryServer(s, &server{})
+	log.Printf("server listening at %v", listener.Addr())
 	if err := s.Serve(listener); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
