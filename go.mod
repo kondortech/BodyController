@@ -1,4 +1,4 @@
-module BodyController
+module github.com/kirvader/BodyController
 
 go 1.21
 
@@ -14,4 +14,3 @@ require (
 	golang.org/x/text v0.12.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230822172742-b8732ec3820d // indirect
 )
-
