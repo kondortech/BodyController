@@ -2,19 +2,16 @@
 prepare-monorepo:
 	sudo docker build . -t body-controller-monorepo
 
-generate-models:
-	sudo echo $(shell find ./ -name '*.proto')
-	sudo protoc \
-        --go_out protos/gen \
-        --go_opt paths=source_relative \
-        --go-grpc_out protos/gen \
-        --go-grpc_opt paths=source_relative \
-        $(shell find ./ -name '*.proto')
-
 PROTO_FILES = $(shell find ./ -name '*.proto')
 
-names:
-	parentdir=./
-	for name in $(shell find ./ -name '*.proto'); do \
-		dirname $$name; \
+.PHONY: generate-all-models
+generate-all-models:
+	for file in $(PROTO_FILES); do \
+		proto_dir=$$(dirname "$$file"); \
+		proto_basename=$$(basename "$$file"); \
+		echo "generating proto for $$proto_dir $$proto_basename"; \
+		cd $$proto_dir; \
+		protoc --proto_path=. --go_out=. --go-grpc_out=. --go_opt=paths=source_relative --go-grpc_opt=paths=source_relative $$proto_basename; \
+		cd -; \
+		echo "generated proto for $$proto_dir $$proto_basename"; \
 	done
