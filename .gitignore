@@ -22,3 +22,6 @@ go.work
 
 # protobuf generated files
 *.pb.go
+
+*/script
+*/service

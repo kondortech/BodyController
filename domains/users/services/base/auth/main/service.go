@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -19,27 +18,10 @@ import (
 // TODO replace with env pulling
 const mongoDBURI = "mongodb://body-controller-mongo-db:27017"
 
-// const mongoDBURI = "mongodb://127.0.0.1:27017"
-
 type AuthService struct {
 	mongoClient *mongo.Client
 
 	pbAuth.UnimplementedAuthServer
-}
-
-// DeleteUser implements proto.AuthServer.
-func (*AuthService) DeleteUser(context.Context, *pbAuth.DeleteUserRequest) (*pbAuth.DeleteUserResponse, error) {
-	panic("unimplemented")
-}
-
-// LogIn implements proto.AuthServer.
-func (*AuthService) LogIn(context.Context, *pbAuth.LogInRequest) (*pbAuth.LogInResponse, error) {
-	panic("unimplemented")
-}
-
-// LogOut implements proto.AuthServer.
-func (*AuthService) LogOut(context.Context, *pbAuth.LogOutRequest) (*pbAuth.LogOutResponse, error) {
-	panic("unimplemented")
 }
 
 func main() {
@@ -50,7 +32,7 @@ func main() {
 
 	grpcServer := grpc.NewServer()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	mongoClient, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoDBURI))

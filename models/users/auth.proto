@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option go_package = "github.com/kirvader/BodyController/domains/models/users";
+
+message UserCredentials {
+	string username = 1;
+	string password = 2;
+};
+
+message LoggedUserInfo {
+	string username = 1;
+	string token = 2;
+}

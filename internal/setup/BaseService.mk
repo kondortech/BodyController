@@ -1,6 +1,6 @@
 MONGODB_CONTAINER_NAME = body-controller-mongo-db
 SERVICE_TO_ROOT_RELATIVE = ../../../../..
-PROJECT_ROOT = $(shell cd $(SERVICE_TO_ROOT_RELATIVE) && pwd && cd ~-)
+PROJECT_ROOT = $(shell cd $(SERVICE_TO_ROOT_RELATIVE) && pwd && cd -)
 
 # TODO construct DOMAIN_NAME and SERVICE_NAME with assumptions that this file is in the base service root dir
 # Every Makefile for now will have custom variables DOMAIN_NAME and SERVICE_NAME
@@ -34,7 +34,6 @@ clean-debug-network:
 clean-docker: clean-base-service-docker clean-debug-network
 
 run-local: generate-all-protos
-# TODO build should build the whole project, but have ./main/service.go as an entry point
 	go run -mod=mod ./main/*
 
 clean-local:

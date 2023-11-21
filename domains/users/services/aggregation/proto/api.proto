@@ -2,12 +2,11 @@ syntax = "proto3";
 
 import "models/users/auth.proto";
 
-option go_package = "github.com/kirvader/BodyController/domains/users/services/base/auth/proto";
+option go_package = "github.com/kirvader/BodyController/domains/users/services/aggregation/proto";
 
-service Auth {
+service Users {
   	rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
 	rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
-
 	rpc LogIn(LogInRequest) returns (LogInResponse);
 }
 
