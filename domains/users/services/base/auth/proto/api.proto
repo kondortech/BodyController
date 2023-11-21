@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+option go_package = "github.com/kirvader/BodyController/services/auth/proto";
+
+service Auth {
+  	rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+	rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
+
+	rpc LogIn(LogInRequest) returns (LogInResponse);
+	rpc LogOut(LogOutRequest) returns (LogOutResponse);
+}
+
+message UserCredentials {
+	string username = 1;
+	string password = 2;
+};
+
+message LoggedUserInfo {
+	string username = 1;
+	string token = 2;
+}
+
+message CreateUserRequest {
+	UserCredentials user_credentials = 1;
+};
+
+message CreateUserResponse {};
+
+message DeleteUserRequest {
+	UserCredentials user_credentials = 1;
+};
+
+message DeleteUserResponse {};
+
+message LogInRequest {
+	UserCredentials user_credentials = 1;
+};
+
+message LogInResponse {
+	LoggedUserInfo logged_user_info = 1;
+};
+
+message LogOutRequest {};
+
+message LogOutResponse {};

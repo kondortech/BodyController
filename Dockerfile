@@ -10,5 +10,5 @@ RUN go mod download
 RUN mkdir -p pkg
 COPY ./pkg/ ./pkg
 
-RUN mkdir -p services
-COPY ./services/ ./services
+RUN mkdir -p domains
+COPY ./domains/ ./domains

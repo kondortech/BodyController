@@ -1,11 +1,6 @@
-.PHONY: prepare-monorepo
-prepare-monorepo:
-	sudo docker build . -t body-controller-monorepo
-
 PROTO_FILES = $(shell find ./ -name '*.proto')
 
-.PHONY: generate-all-models
-generate-all-models:
+generate-all-protos:
 	for file in $(PROTO_FILES); do \
 		proto_dir=$$(dirname "$$file"); \
 		proto_basename=$$(basename "$$file"); \
@@ -15,3 +10,8 @@ generate-all-models:
 		cd -; \
 		echo "generated proto for $$proto_dir $$proto_basename"; \
 	done
+
+pack-monorepo-in-docker: generate-all-protos
+	sudo docker build . -t body-controller-monorepo
+
+.PHONY: pack-monorepo-in-docker generate-all-protos
