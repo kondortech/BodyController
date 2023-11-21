@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	conn, err := grpc.Dial("0.0.0.0:8080", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.Dial("localhost:8080", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
@@ -20,7 +20,7 @@ func main() {
 	resp, err := client.CreateUser(context.Background(), &pbAuth.CreateUserRequest{
 		UserCredentials: &pbAuth.UserCredentials{
 			Username: "kk",
-			Password: "qwerty",
+			Password: "lol",
 		},
 	})
 	if err != nil {
