@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "github.com/kirvader/BodyController/domains/models/users";
+option go_package = "github.com/kirvader/BodyController/models/users";
 
 message UserCredentials {
 	string username = 1;

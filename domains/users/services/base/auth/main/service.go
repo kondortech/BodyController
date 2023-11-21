@@ -16,7 +16,8 @@ import (
 )
 
 // TODO replace with env pulling
-const mongoDBURI = "mongodb://body-controller-mongo-db:27017"
+// const mongoDBURI = "mongodb://body-controller-mongo-db:27017"
+const mongoDBURI = "mongodb://0.0.0.0:27017"
 
 type AuthService struct {
 	mongoClient *mongo.Client

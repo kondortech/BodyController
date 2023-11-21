@@ -8,13 +8,14 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
 
-	pbAuth "github.com/kirvader/BodyController/domains/users/services/aggregation/proto"
+	pb "github.com/kirvader/BodyController/domains/users/services/aggregation/proto"
+	pbAuth "github.com/kirvader/BodyController/domains/users/services/base/auth/proto"
 )
 
 type UsersService struct {
 	authClient *pbAuth.AuthClient
 
-	pbAuth.UnimplementedAuthServer
+	pb.UnimplementedUsersServer
 }
 
 func main() {
@@ -26,7 +27,7 @@ func main() {
 	authClient := pbAuth.NewAuthClient(conn)
 
 	svc := &UsersService{
-		authClient: authClient,
+		authClient: &authClient,
 	}
 
 	listener, err := net.Listen("tcp", ":8080")
@@ -36,7 +37,7 @@ func main() {
 
 	grpcServer := grpc.NewServer()
 
-	pbAuth.RegisterUsersServer(grpcServer, svc)
+	pb.RegisterUsersServer(grpcServer, svc)
 	reflection.Register(grpcServer)
 	log.Printf("server listening at %v", listener.Addr())
 	if err := grpcServer.Serve(listener); err != nil {

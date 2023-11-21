@@ -5,6 +5,7 @@ import (
 	"log"
 
 	pbAuth "github.com/kirvader/BodyController/domains/users/services/base/auth/proto"
+	users "github.com/kirvader/BodyController/models/users"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -18,8 +19,8 @@ func main() {
 	client := pbAuth.NewAuthClient(conn)
 
 	resp, err := client.CreateUser(context.Background(), &pbAuth.CreateUserRequest{
-		UserCredentials: &pbAuth.UserCredentials{
-			Username: "kk",
+		UserCredentials: &users.UserCredentials{
+			Username: "kk2",
 			Password: "lol",
 		},
 	})

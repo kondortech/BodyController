@@ -7,13 +7,16 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	pbAuth "github.com/kirvader/BodyController/domains/users/services/base/auth/proto"
+	user "github.com/kirvader/BodyController/models/users"
 )
 
-// yet this application is not deployed so secrets don't have any place to be stored
+// this application is not in production yet so this is just a dummy secret
 // TODO hide it
 const secretKey = "abracadabra this is secret key"
 
 func (svc *AuthService) LogIn(ctx context.Context, req *pbAuth.LogInRequest) (*pbAuth.LogInResponse, error) {
+	// TODO validate user
+
 	token := jwt.NewWithClaims(
 		jwt.SigningMethodHS256,
 		jwt.MapClaims{
@@ -27,7 +30,7 @@ func (svc *AuthService) LogIn(ctx context.Context, req *pbAuth.LogInRequest) (*p
 		return nil, fmt.Errorf("generating of authentication token failed: %w", err)
 	}
 	return &pbAuth.LogInResponse{
-		LoggedUserInfo: &pbAuth.LoggedUserInfo{
+		LoggedUserInfo: &user.LoggedUserInfo{
 			Username: req.UserCredentials.Username,
 			Token:    authToken,
 		},
