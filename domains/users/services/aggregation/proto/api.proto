@@ -27,5 +27,5 @@ message LogInRequest {
 };
 
 message LogInResponse {
-	LoggedUserInfo logged_user_info = 1;
+	string token = 1;
 };

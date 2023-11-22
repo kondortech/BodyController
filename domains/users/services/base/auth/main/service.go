@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net"
 
@@ -45,16 +44,14 @@ func main() {
 			panic(err)
 		}
 	}()
-
 	err = mongoClient.Ping(ctx, readpref.Primary())
 	if err != nil {
 		panic(err)
 	}
+
 	svc := &AuthService{
 		mongoClient: mongoClient,
 	}
-
-	fmt.Println("Connected to MongoDB!")
 
 	pbAuth.RegisterAuthServer(grpcServer, svc)
 	reflection.Register(grpcServer)

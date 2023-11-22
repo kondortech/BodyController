@@ -5,34 +5,49 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/golang-jwt/jwt/v5"
 	pbAuth "github.com/kirvader/BodyController/domains/users/services/base/auth/proto"
-	user "github.com/kirvader/BodyController/models/users"
+
+	"github.com/kirvader/BodyController/internal/auth"
+	"github.com/kirvader/BodyController/models/users"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
-// this application is not in production yet so this is just a dummy secret
-// TODO hide it
-const secretKey = "abracadabra this is secret key"
-
 func (svc *AuthService) LogIn(ctx context.Context, req *pbAuth.LogInRequest) (*pbAuth.LogInResponse, error) {
-	// TODO validate user
+	if err := checkUserCredentials(svc.mongoClient, req.UserCredentials); err != nil {
+		return nil, err
+	}
 
-	token := jwt.NewWithClaims(
-		jwt.SigningMethodHS256,
-		jwt.MapClaims{
-			"username":        req.UserCredentials.Username,
-			"expiration_date": time.Now().Add(time.Hour * 24).Unix(),
-		},
-	)
-
-	authToken, err := token.SignedString(secretKey)
+	authToken, err := auth.GenerateAuthJWT(req.UserCredentials.Username, time.Hour*24)
 	if err != nil {
 		return nil, fmt.Errorf("generating of authentication token failed: %w", err)
 	}
+
 	return &pbAuth.LogInResponse{
-		LoggedUserInfo: &user.LoggedUserInfo{
-			Username: req.UserCredentials.Username,
-			Token:    authToken,
-		},
+		Token: authToken,
 	}, nil
+}
+
+func checkUserCredentials(mongoClient *mongo.Client, providedUserCredentials *users.UserCredentials) error {
+	userCredentialsCollection := mongoClient.Database("BodyController").Collection("UserCredentials")
+
+	var userCredentialsRecord users.UserCredentials
+	err := userCredentialsCollection.FindOne(
+		context.TODO(),
+		bson.D{{Key: "username", Value: providedUserCredentials.Username}},
+		options.FindOne().SetProjection(bson.D{{Key: "username", Value: 1}, {Key: "password", Value: 1}})).
+		Decode(&userCredentialsRecord)
+
+	if err != nil {
+		return status.Error(codes.InvalidArgument, fmt.Sprintf("provided username doesn't exist: %s", providedUserCredentials.Username))
+	}
+
+	if userCredentialsRecord.Password != providedUserCredentials.Password {
+		return status.Error(codes.InvalidArgument, "wrong password for provided username")
+	}
+	return nil
 }

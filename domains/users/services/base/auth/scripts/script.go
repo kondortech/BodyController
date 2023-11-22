@@ -5,7 +5,6 @@ import (
 	"log"
 
 	pbAuth "github.com/kirvader/BodyController/domains/users/services/base/auth/proto"
-	users "github.com/kirvader/BodyController/models/users"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -18,11 +17,8 @@ func main() {
 	defer conn.Close()
 	client := pbAuth.NewAuthClient(conn)
 
-	resp, err := client.CreateUser(context.Background(), &pbAuth.CreateUserRequest{
-		UserCredentials: &users.UserCredentials{
-			Username: "kk2",
-			Password: "lol",
-		},
+	resp, err := client.DeleteUser(context.Background(), &pbAuth.DeleteUserRequest{
+		Username: "kk2",
 	})
 	if err != nil {
 		log.Printf("error: %v", err)
