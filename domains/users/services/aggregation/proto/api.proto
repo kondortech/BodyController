@@ -2,6 +2,7 @@ syntax = "proto3";
 
 import "models/users/auth.proto";
 
+package domains.users.services.aggregation;
 option go_package = "github.com/kirvader/BodyController/domains/users/services/aggregation/proto";
 
 service Users {
@@ -11,7 +12,7 @@ service Users {
 }
 
 message CreateUserRequest {
-	UserCredentials user_credentials = 1;
+	models.users.auth.UserCredentials user_credentials = 1;
 };
 
 message CreateUserResponse {};
@@ -23,7 +24,7 @@ message DeleteUserRequest {
 message DeleteUserResponse {};
 
 message LogInRequest {
-	UserCredentials user_credentials = 1;
+	models.users.auth.UserCredentials user_credentials = 1;
 };
 
 message LogInResponse {

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"log"
 	"net"
 
@@ -10,27 +12,49 @@ import (
 
 	pb "github.com/kirvader/BodyController/domains/users/services/aggregation/proto"
 	pbAuth "github.com/kirvader/BodyController/domains/users/services/base/auth/proto"
+	userModels "github.com/kirvader/BodyController/models/users"
+	"github.com/kirvader/BodyController/pkg/utils"
 )
 
 type UsersService struct {
-	authClient *pbAuth.AuthClient
+	authClient pbAuth.AuthClient
 
 	pb.UnimplementedUsersServer
 }
 
 func main() {
-	conn, err := grpc.Dial("localhost:8080", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	authServiceClientPort := utils.GetEnvWithDefault("BASE_AUTH_IP", "0.0.0.0")
+	authServiceClientIP := utils.GetEnvWithDefault("BASE_AUTH_PORT", "8080")
+
+	authServiceURI := fmt.Sprintf("%s:%s", authServiceClientPort, authServiceClientIP)
+	log.Printf("uri: %s", authServiceURI)
+
+	conn, err := grpc.Dial(authServiceURI, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
 	authClient := pbAuth.NewAuthClient(conn)
 
-	svc := &UsersService{
-		authClient: &authClient,
+	_, err = authClient.CreateUser(context.Background(), &pbAuth.CreateUserRequest{
+		UserCredentials: &userModels.UserCredentials{
+			Username: "kk-aggr",
+			Password: "lol",
+		},
+	})
+	if err != nil {
+		log.Print("error when creating user: ", err)
 	}
 
-	listener, err := net.Listen("tcp", ":8080")
+	svc := &UsersService{
+		authClient: authClient,
+	}
+
+	servicePort := utils.GetEnvWithDefault("SERVICE_PORT", "10000")
+	serviceURI := fmt.Sprintf(":%s", servicePort)
+	log.Println("service uri: ", serviceURI)
+
+	listener, err := net.Listen("tcp", serviceURI)
 	if err != nil {
 		panic(err)
 	}

@@ -1,33 +1,33 @@
 package main
 
-// import (
-// 	"context"
-// 	"log"
+import (
+	"context"
+	"log"
 
-// 	pbAuth "github.com/kirvader/BodyController/domains/users/services/base/auth/proto"
-// 	users "github.com/kirvader/BodyController/models/users"
+	pbUsers "github.com/kirvader/BodyController/domains/users/services/aggregation/proto"
+	userModels "github.com/kirvader/BodyController/models/users"
 
-// 	"google.golang.org/grpc"
-// 	"google.golang.org/grpc/credentials/insecure"
-// )
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+)
 
-// func main() {
-// 	conn, err := grpc.Dial("localhost:8080", grpc.WithTransportCredentials(insecure.NewCredentials()))
-// 	if err != nil {
-// 		log.Fatalf("did not connect: %v", err)
-// 	}
-// 	defer conn.Close()
-// 	client := pbAuth.NewAuthClient(conn)
+func main() {
+	conn, err := grpc.Dial("0.0.0.0:8080", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+	defer conn.Close()
+	client := pbUsers.NewUsersClient(conn)
 
-// 	resp, err := client.CreateUser(context.Background(), &pbAuth.CreateUserRequest{
-// 		UserCredentials: &users.UserCredentials{
-// 			Username: "kk",
-// 			Password: "lol",
-// 		},
-// 	})
-// 	if err != nil {
-// 		log.Printf("error: %v", err)
-// 		return
-// 	}
-// 	log.Printf("response got: %v", resp)
-// }
+	resp, err := client.CreateUser(context.Background(), &pbUsers.CreateUserRequest{
+		UserCredentials: &userModels.UserCredentials{
+			Username: "kk-aggr",
+			Password: "lol",
+		},
+	})
+	if err != nil {
+		log.Printf("error: %v", err)
+		return
+	}
+	log.Printf("response got: %v", resp)
+}

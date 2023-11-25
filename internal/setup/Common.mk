@@ -1,4 +1,0 @@
-DEFAULT_BASE_SERVICE_PORT = 8080
-DEFAULT_DEBUG_NETWORK = debug-base-db-network
-
-DATABASE_NAME = BodyController

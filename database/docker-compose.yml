@@ -1,0 +1,38 @@
+services:
+  my-mongodb:
+    image: mongo:latest
+    container_name: body-controller-mongodb-container
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb-data-volume:/data/db
+    networks:
+      - mongodb-network
+      - mongodb-observer-network
+
+  my-mongoclient:
+    image: mongo-express:latest
+    container_name: body-controller-mongodb-observer-container
+    ports:
+      - 27000:8081
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=body-controller-mongodb-container
+    networks:
+      - mongodb-observer-network
+    depends_on:
+      my-mongodb:
+        condition: service_healthy
+
+volumes:
+  mongodb-data-volume:
+    external: true
+
+networks:
+  mongodb-observer-network:
+  mongodb-network:
+    external: true
