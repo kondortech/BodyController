@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"time"
 
+	userModels "github.com/kirvader/BodyController/domains/users/models"
+	users "github.com/kirvader/BodyController/domains/users/models"
 	pbAuth "github.com/kirvader/BodyController/domains/users/services/base/auth/proto"
 
 	"github.com/kirvader/BodyController/internal/auth"
-	"github.com/kirvader/BodyController/models/users"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -35,7 +36,7 @@ func (svc *AuthService) LogIn(ctx context.Context, req *pbAuth.LogInRequest) (*p
 func checkUserCredentials(mongoClient *mongo.Client, providedUserCredentials *users.UserCredentials) error {
 	userCredentialsCollection := mongoClient.Database("BodyController").Collection("UserCredentials")
 
-	var userCredentialsRecord users.UserCredentials
+	var userCredentialsRecord userModels.UserCredentials
 	err := userCredentialsCollection.FindOne(
 		context.TODO(),
 		bson.D{{Key: "username", Value: providedUserCredentials.Username}},

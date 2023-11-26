@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package domains.users.models;
+option go_package = "github.com/kirvader/BodyController/domains/users/models";
+
+message UserCredentials {
+	string username = 1;
+	string password = 2;
+};

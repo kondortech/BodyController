@@ -10,9 +10,9 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
 
+	userModels "github.com/kirvader/BodyController/domains/users/models"
 	pb "github.com/kirvader/BodyController/domains/users/services/aggregation/proto"
 	pbAuth "github.com/kirvader/BodyController/domains/users/services/base/auth/proto"
-	userModels "github.com/kirvader/BodyController/models/users"
 	"github.com/kirvader/BodyController/pkg/utils"
 )
 

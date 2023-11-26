@@ -4,8 +4,8 @@ import (
 	"context"
 	"log"
 
+	userModels "github.com/kirvader/BodyController/domains/users/models"
 	pbUsers "github.com/kirvader/BodyController/domains/users/services/aggregation/proto"
-	userModels "github.com/kirvader/BodyController/models/users"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"

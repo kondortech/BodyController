@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-import "models/users/auth.proto";
+import "domains/users/models/auth.proto";
 
 package domains.users.services.base.auth;
 option go_package = "github.com/kirvader/BodyController/domains/users/services/base/auth/proto";
@@ -8,12 +8,11 @@ option go_package = "github.com/kirvader/BodyController/domains/users/services/b
 service Auth {
   	rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
 	rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
-
 	rpc LogIn(LogInRequest) returns (LogInResponse);
 }
 
 message CreateUserRequest {
-	models.users.auth.UserCredentials user_credentials = 1;
+	domains.users.models.UserCredentials user_credentials = 1;
 };
 
 message CreateUserResponse {};
@@ -25,7 +24,7 @@ message DeleteUserRequest {
 message DeleteUserResponse {};
 
 message LogInRequest {
-	models.users.auth.UserCredentials user_credentials = 1;
+	domains.users.models.UserCredentials user_credentials = 1;
 };
 
 message LogInResponse {
