@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+import "domains/nutrition/models/ingredient.proto";
+
+package domains.users.services.base.auth;
+option go_package = "github.com/kirvader/BodyController/domains/users/services/base/auth/proto";
+
+service Ingredient {
+  	rpc CreateIngredient(CreateIngredientRequest) returns (CreateIngredientResponse);
+	rpc DeleteIngredient(DeleteIngredientRequest) returns (DeleteIngredientResponse);
+	rpc UpdateIngredient(UpdateIngredientRequest) returns (UpdateIngredientResponse);
+
+	rpc GetIngredient(GetIngredientRequest) returns (GetIngredientResponse);
+	rpc ListIngredients(ListIngredientsRequest) returns (ListIngredientsResponse);
+}
+
+message CreateIngredientRequest {
+	domains.nutrition.models.Ingredient ingredient = 1;
+};
+
+message CreateIngredientResponse {
+	string hex_ingredient_id = 1;
+};
+
+message DeleteIngredientRequest {
+	string hex_ingredient_id = 1;
+};
+
+message DeleteIngredientResponse {};
+
+message UpdateIngredientRequest {
+	string hex_ingredient_id = 1;
+	domains.nutrition.models.Ingredient new_ingredient_info = 2;
+};
+
+message UpdateIngredientResponse {};
+
+message GetIngredientRequest {
+	string ingredient_hex_id = 1;
+};
+
+message GetIngredientResponse {
+	domains.nutrition.models.Ingredient ingredient = 1;
+};
+
+message ListIngredientsRequest {
+	int32 page_size = 1;
+	google.protobuf.StringValue last_page_token = 2;
+};
+
+message ListIngredientsResponse {
+	repeated domains.nutrition.models.Ingredient ingredients = 1;
+	google.protobuf.StringValue current_page_token = 2;
+};
+
+

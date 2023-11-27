@@ -1,0 +1,35 @@
+services:
+  users-aggregation-service:
+    image: ${AGGREGATION_SERVICE_NAME}
+    container_name: ${AGGREGATION_SERVICE_NAME}
+    environment:
+      - SERVICE_PORT=${AGGREGATION_SERVICE_PORT}
+      - BASE_AUTH_IP=${BASE_AUTH_SERVICE_NAME}
+      - BASE_AUTH_PORT=${BASE_AUTH_SERVICE_PORT}
+    expose:
+      - ${AGGREGATION_SERVICE_PORT}
+    ports:
+      - ${PUBLISHED_AGGREGATION_SERVICE_PORT}:${AGGREGATION_SERVICE_PORT}
+    networks:
+      - users-domain-network
+    depends_on:
+      - users-base-auth
+  users-base-auth:
+    image: ${BASE_AUTH_SERVICE_NAME}
+    container_name: ${BASE_AUTH_SERVICE_NAME}
+    environment:
+      - SERVICE_PORT=${BASE_AUTH_SERVICE_PORT}
+      - MONGODB_IP=${MONGODB_IP}
+      - MONGODB_PORT=${MONGODB_PORT}
+    expose:
+      - ${BASE_AUTH_SERVICE_PORT}
+    ports:
+      - ${PUBLISHED_BASE_AUTH_SERVICE_PORT}:${BASE_AUTH_SERVICE_PORT}
+    networks:
+      - users-domain-network
+      - mongodb-network
+
+networks:
+  users-domain-network:
+  mongodb-network:
+    external: true

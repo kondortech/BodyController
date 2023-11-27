@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+import "domains/nutrition/models/ingredient.proto";
+
+package domains.users.services.aggregation;
+option go_package = "github.com/kirvader/BodyController/domains/users/services/aggregation/proto";
+
+service Nutrition {
+	rpc GetIngredient(GetIngredientRequest) returns (GetIngredientResponse);
+	rpc ListIngredients(ListIngredientsRequest) returns (ListIngredientsResponse);
+}
+
+message GetIngredientRequest {
+	string ingredient_hex_id = 1;
+};
+
+message GetIngredientResponse {
+	domains.nutrition.models.Ingredient ingredient = 1;
+};
+
+message ListIngredientsRequest {
+	string page_size = 1;
+	google.protobuf.StringValue next_page_token = 2;
+};
+
+message ListIngredientsResponse {
+	repeated domains.nutrition.models.Ingredient ingredient = 1;
+	google.protobuf.StringValue next_page_token = 2;
+};
+

@@ -10,4 +10,7 @@ build-service-images: pack-monorepo-in-docker-from-service
 compose-domain: build-service-images
 	sudo docker compose up -d
 
+stop-composed-domain:
+	sudo docker compose stop
+
 .PHONY: build-service-images compose-domain
