@@ -1,7 +1,7 @@
 FROM body-controller-monorepo
 
-WORKDIR /domains/users/services/aggregation/
+WORKDIR /domains/nutrition/services/aggregation/
 
-RUN go build -mod=mod -o service ./main/*
+RUN go build -mod=mod -o service ./*.go
 
 CMD [ "./service" ]

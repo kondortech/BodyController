@@ -1,4 +1,4 @@
-package main
+package src
 
 import (
 	"context"
@@ -10,7 +10,12 @@ import (
 func (svc *AuthService) CreateUser(ctx context.Context, req *pbAuth.CreateUserRequest) (*pbAuth.CreateUserResponse, error) {
 	userCredentialsCollection := svc.mongoClient.Database("BodyController").Collection("UserCredentials")
 
-	if _, err := userCredentialsCollection.InsertOne(ctx, req.GetUserCredentials()); err != nil {
+	mongoUserCredentials, err := req.UserCredentials.ConvertToMongoReadable()
+	if err != nil {
+		return nil, err
+	}
+
+	if _, err := userCredentialsCollection.InsertOne(ctx, mongoUserCredentials); err != nil {
 		return nil, fmt.Errorf("insert error: %w", err)
 	}
 

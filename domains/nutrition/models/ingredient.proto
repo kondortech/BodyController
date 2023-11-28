@@ -6,11 +6,12 @@ package domains.nutrition.models;
 option go_package = "github.com/kirvader/BodyController/domains/nutrition/models";
 
 message Ingredient {
-	string id = 1;
+	string hex_id = 1;
 
 	domains.nutrition.models.Macros100g macros100g = 2;
 	string title = 3;
 	string description = 4;
+	string author = 5;
 };
 
 // @protoc --proto_path=. --proto_path=../../proto --proto_path=../../proto/third_party --proto_path=../third_party --gotag_out=xxx="bson+\"-\"",output_path=.:. data.protogo get github.com/srikrsna/protoc-gen-gotag

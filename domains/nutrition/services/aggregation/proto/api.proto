@@ -20,12 +20,12 @@ message GetIngredientResponse {
 };
 
 message ListIngredientsRequest {
-	string page_size = 1;
-	google.protobuf.StringValue next_page_token = 2;
+	int32 page_size = 1;
+	google.protobuf.StringValue last_page_token = 2;
 };
 
 message ListIngredientsResponse {
-	repeated domains.nutrition.models.Ingredient ingredient = 1;
-	google.protobuf.StringValue next_page_token = 2;
+	repeated domains.nutrition.models.Ingredient ingredients = 1;
+	google.protobuf.StringValue retrieved_page_token = 2;
 };
 

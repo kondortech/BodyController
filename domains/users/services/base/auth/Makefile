@@ -4,3 +4,4 @@ include ../../../../../internal/setup/BaseService.mk
 
 DOMAIN_NAME = users
 SERVICE_NAME = auth
+SERVICE_PORT = 10001

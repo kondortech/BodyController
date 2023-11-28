@@ -81,7 +81,7 @@ func (svc *IngredientService) ListIngredients(ctx context.Context, req *pbIngred
 	}
 
 	return &pbIngredient.ListIngredientsResponse{
-		Ingredients:      result,
-		CurrentPageToken: wrapperspb.String(currentPageToken),
+		Ingredients:        result,
+		RetrievedPageToken: wrapperspb.String(currentPageToken),
 	}, nil
 }

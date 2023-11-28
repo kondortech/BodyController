@@ -12,7 +12,7 @@ import (
 func (svc *IngredientService) DeleteIngredient(ctx context.Context, req *pbIngredient.DeleteIngredientRequest) (*pbIngredient.DeleteIngredientResponse, error) {
 	ingredientsCollection := svc.mongoClient.Database("BodyController").Collection("Ingredients")
 
-	objectId, err := primitive.ObjectIDFromHex(req.HexIngredientId)
+	objectId, err := primitive.ObjectIDFromHex(req.IngredientHexId)
 	if err != nil {
 		return nil, err
 	}

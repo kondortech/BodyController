@@ -13,7 +13,7 @@ build-docker: pack-monorepo-in-docker-from-service
 	sudo docker build --progress=plain -t $(SERVICE_CONTAINER_NAME) .
 
 run-local: generate-all-protos
-	go run -mod=mod ./main/*
+	go run -mod=mod ./cmd.go
 
 clean-local:
 	rm service

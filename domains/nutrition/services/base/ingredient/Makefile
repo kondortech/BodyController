@@ -5,5 +5,4 @@ include ../../../../../internal/setup/BaseService.mk
 DOMAIN_NAME = nutrition
 SERVICE_NAME = ingredient
 
-run:
-	go run -mod=mod ./*
+SERVICE_PORT = 20001

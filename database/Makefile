@@ -24,4 +24,7 @@ apply-all-migrations-local:
 drop-all-migrations-local:
 	migrate -path ${MIGRATIONS_DIRECTORY} -database mongodb://0.0.0.0:${MONGODB_PORT}/${DATABASE_NAME} -verbose down
 
+create-new-migration:
+	migrate create -ext json -dir dbmigrations -format unix ${NAME}
+
 .PHONY: create-mongodb-volume create-mongodb-network apply-all-migrations-local drop-all-migrations-local

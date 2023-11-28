@@ -22,6 +22,6 @@ func (svc *IngredientService) CreateIngredient(ctx context.Context, req *pbIngre
 	}
 
 	return &pbIngredient.CreateIngredientResponse{
-		HexIngredientId: resp.InsertedID.(primitive.ObjectID).Hex(),
+		IngredientHexId: resp.InsertedID.(primitive.ObjectID).Hex(),
 	}, nil
 }

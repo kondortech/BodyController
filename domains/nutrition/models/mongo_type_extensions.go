@@ -37,6 +37,7 @@ type IngredientMongoDB struct {
 	MongoMacros MacrosMongoDB `bson:"macros_100g"`
 	Title       string        `bson:"title"`
 	Description string        `bson:"description"`
+	Author      string        `bson:"author"`
 }
 
 func (protoIngredient *Ingredient) ConvertToMongoDocument() (*IngredientMongoDB, error) {
@@ -47,11 +48,12 @@ func (protoIngredient *Ingredient) ConvertToMongoDocument() (*IngredientMongoDB,
 
 	mongoIngredient := &IngredientMongoDB{
 		MongoMacros: *mongoMacros,
-		Title:       "",
-		Description: "",
+		Title:       protoIngredient.Title,
+		Description: protoIngredient.Description,
+		Author:      protoIngredient.Author,
 	}
-	if len(protoIngredient.GetId()) != 0 {
-		objectId, err := primitive.ObjectIDFromHex(protoIngredient.GetId())
+	if len(protoIngredient.GetHexId()) != 0 {
+		objectId, err := primitive.ObjectIDFromHex(protoIngredient.GetHexId())
 		if err != nil {
 			return nil, fmt.Errorf("Ingredient.ConvertToMongoDocument returned error: %v", err)
 		}
@@ -67,9 +69,10 @@ func (mongoIngredient *IngredientMongoDB) ConvertToProtoMessage() (*Ingredient, 
 	}
 
 	return &Ingredient{
-		Id:          mongoIngredient.Id.Hex(),
+		HexId:       mongoIngredient.Id.Hex(),
 		Macros100G:  protoMacros,
 		Title:       mongoIngredient.Title,
 		Description: mongoIngredient.Description,
+		Author:      mongoIngredient.Author,
 	}, nil
 }

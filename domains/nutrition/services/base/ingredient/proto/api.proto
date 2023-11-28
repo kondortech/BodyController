@@ -20,17 +20,17 @@ message CreateIngredientRequest {
 };
 
 message CreateIngredientResponse {
-	string hex_ingredient_id = 1;
+	string ingredient_hex_id = 1;
 };
 
 message DeleteIngredientRequest {
-	string hex_ingredient_id = 1;
+	string ingredient_hex_id = 1;
 };
 
 message DeleteIngredientResponse {};
 
 message UpdateIngredientRequest {
-	string hex_ingredient_id = 1;
+	string ingredient_hex_id = 1;
 	domains.nutrition.models.Ingredient new_ingredient_info = 2;
 };
 
@@ -51,7 +51,7 @@ message ListIngredientsRequest {
 
 message ListIngredientsResponse {
 	repeated domains.nutrition.models.Ingredient ingredients = 1;
-	google.protobuf.StringValue current_page_token = 2;
+	google.protobuf.StringValue retrieved_page_token = 2;
 };
 
 

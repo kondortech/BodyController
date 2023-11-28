@@ -4,26 +4,22 @@ import (
 	"context"
 	"log"
 
-	userModels "github.com/kirvader/BodyController/domains/users/models"
-	pbUsers "github.com/kirvader/BodyController/domains/users/services/aggregation/proto"
+	pbNutrition "github.com/kirvader/BodyController/domains/nutrition/services/aggregation/proto"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
 func main() {
-	conn, err := grpc.Dial("0.0.0.0:8080", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.Dial("0.0.0.0:20000", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
-	client := pbUsers.NewUsersClient(conn)
+	client := pbNutrition.NewNutritionClient(conn)
 
-	resp, err := client.CreateUser(context.Background(), &pbUsers.CreateUserRequest{
-		UserCredentials: &userModels.UserCredentials{
-			Username: "kk-aggr",
-			Password: "lol",
-		},
+	resp, err := client.ListIngredients(context.Background(), &pbNutrition.ListIngredientsRequest{
+		PageSize: 10,
 	})
 	if err != nil {
 		log.Printf("error: %v", err)
