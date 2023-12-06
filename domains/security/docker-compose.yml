@@ -1,5 +1,5 @@
 services:
-  users-aggregation-service:
+  security-aggregation-service:
     image: ${AGGREGATION_SERVICE_NAME}
     container_name: ${AGGREGATION_SERVICE_NAME}
     environment:
@@ -11,10 +11,10 @@ services:
     ports:
       - ${PUBLISHED_AGGREGATION_SERVICE_PORT}:${AGGREGATION_SERVICE_PORT}
     networks:
-      - users-domain-network
+      - security-domain-network
     depends_on:
-      - users-base-auth
-  users-base-auth:
+      - security-base-auth
+  security-base-auth:
     image: ${BASE_AUTH_SERVICE_NAME}
     container_name: ${BASE_AUTH_SERVICE_NAME}
     environment:
@@ -26,10 +26,10 @@ services:
     ports:
       - ${PUBLISHED_BASE_AUTH_SERVICE_PORT}:${BASE_AUTH_SERVICE_PORT}
     networks:
-      - users-domain-network
+      - security-domain-network
       - mongodb-network
 
 networks:
-  users-domain-network:
+  security-domain-network:
   mongodb-network:
     external: true

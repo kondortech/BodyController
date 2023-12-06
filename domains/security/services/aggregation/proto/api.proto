@@ -1,18 +1,18 @@
 syntax = "proto3";
 
-import "domains/users/models/auth.proto";
+import "domains/security/models/auth.proto";
 
-package domains.users.services.base.auth;
-option go_package = "github.com/kirvader/BodyController/domains/users/services/base/auth/proto";
+package domains.security.services.aggregation;
+option go_package = "github.com/kirvader/BodyController/domains/security/services/aggregation/proto";
 
-service Auth {
+service Security {
   	rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
 	rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
 	rpc LogIn(LogInRequest) returns (LogInResponse);
 }
 
 message CreateUserRequest {
-	domains.users.models.UserCredentials user_credentials = 1;
+	domains.security.models.UserCredentials user_credentials = 1;
 };
 
 message CreateUserResponse {};
@@ -24,7 +24,7 @@ message DeleteUserRequest {
 message DeleteUserResponse {};
 
 message LogInRequest {
-	domains.users.models.UserCredentials user_credentials = 1;
+	domains.security.models.UserCredentials user_credentials = 1;
 };
 
 message LogInResponse {

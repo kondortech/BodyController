@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	pbAuth "github.com/kirvader/BodyController/domains/users/services/base/auth/proto"
+	pbAuth "github.com/kirvader/BodyController/domains/security/services/base/auth/proto"
 )
 
 func (svc *AuthService) CreateUser(ctx context.Context, req *pbAuth.CreateUserRequest) (*pbAuth.CreateUserResponse, error) {

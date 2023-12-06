@@ -4,8 +4,8 @@ import (
 	"context"
 	"log"
 
-	userModels "github.com/kirvader/BodyController/domains/users/models"
-	pbUsers "github.com/kirvader/BodyController/domains/users/services/aggregation/proto"
+	userModels "github.com/kirvader/BodyController/domains/security/models"
+	pbSecurity "github.com/kirvader/BodyController/domains/security/services/aggregation/proto"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -17,9 +17,9 @@ func main() {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
-	client := pbUsers.NewUsersClient(conn)
+	client := pbSecurity.NewUsersClient(conn)
 
-	resp, err := client.CreateUser(context.Background(), &pbUsers.CreateUserRequest{
+	resp, err := client.CreateUser(context.Background(), &pbSecurity.CreateUserRequest{
 		UserCredentials: &userModels.UserCredentials{
 			Username: "kk-aggr",
 			Password: "lol",

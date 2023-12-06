@@ -10,18 +10,18 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
 
-	pb "github.com/kirvader/BodyController/domains/users/services/aggregation/proto"
-	pbAuth "github.com/kirvader/BodyController/domains/users/services/base/auth/proto"
+	pb "github.com/kirvader/BodyController/domains/security/services/aggregation/proto"
+	pbAuth "github.com/kirvader/BodyController/domains/security/services/base/auth/proto"
 	"github.com/kirvader/BodyController/pkg/utils"
 )
 
-type UsersService struct {
+type SecurityService struct {
 	authClient pbAuth.AuthClient
 
-	pb.UnimplementedUsersServer
+	pb.UnimplementedSecurityServer
 }
 
-func NewUsersService(ctx context.Context) (*UsersService, func(), error) {
+func NewSecurityService(ctx context.Context) (*SecurityService, func(), error) {
 	authServiceClientPort := utils.GetEnvWithDefault("BASE_AUTH_IP", "0.0.0.0")
 	authServiceClientIP := utils.GetEnvWithDefault("BASE_AUTH_PORT", "10001")
 
@@ -33,16 +33,16 @@ func NewUsersService(ctx context.Context) (*UsersService, func(), error) {
 		log.Fatalf("did not connect: %v", err)
 	}
 
-	return &UsersService{
+	return &SecurityService{
 			authClient: pbAuth.NewAuthClient(conn),
 		}, func() {
 			conn.Close()
 		}, nil
 }
 
-func (svc *UsersService) Serve(listener net.Listener) error {
+func (svc *SecurityService) Serve(listener net.Listener) error {
 	grpcServer := grpc.NewServer()
-	pb.RegisterUsersServer(grpcServer, svc)
+	pb.RegisterSecurityServer(grpcServer, svc)
 	reflection.Register(grpcServer)
 
 	return grpcServer.Serve(listener)

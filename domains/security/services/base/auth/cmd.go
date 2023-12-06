@@ -6,7 +6,7 @@ import (
 	"log"
 	"net"
 
-	"github.com/kirvader/BodyController/domains/users/services/base/auth/src"
+	"github.com/kirvader/BodyController/domains/security/services/base/auth/src"
 	"github.com/kirvader/BodyController/pkg/utils"
 )
 

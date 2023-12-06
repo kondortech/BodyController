@@ -3,11 +3,11 @@ package src
 import (
 	"context"
 
-	pb "github.com/kirvader/BodyController/domains/users/services/aggregation/proto"
-	pbAuth "github.com/kirvader/BodyController/domains/users/services/base/auth/proto"
+	pb "github.com/kirvader/BodyController/domains/security/services/aggregation/proto"
+	pbAuth "github.com/kirvader/BodyController/domains/security/services/base/auth/proto"
 )
 
-func (svc *UsersService) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
+func (svc *SecurityService) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
 	_, err := svc.authClient.CreateUser(ctx, &pbAuth.CreateUserRequest{
 		UserCredentials: req.UserCredentials,
 	})
@@ -17,7 +17,7 @@ func (svc *UsersService) CreateUser(ctx context.Context, req *pb.CreateUserReque
 	return &pb.CreateUserResponse{}, nil
 }
 
-func (svc *UsersService) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb.DeleteUserResponse, error) {
+func (svc *SecurityService) DeleteUser(ctx context.Context, req *pb.DeleteUserRequest) (*pb.DeleteUserResponse, error) {
 	_, err := svc.authClient.DeleteUser(ctx, &pbAuth.DeleteUserRequest{
 		Username: req.Username,
 	})
@@ -27,7 +27,7 @@ func (svc *UsersService) DeleteUser(ctx context.Context, req *pb.DeleteUserReque
 	return &pb.DeleteUserResponse{}, nil
 }
 
-func (svc *UsersService) LogIn(ctx context.Context, req *pb.LogInRequest) (*pb.LogInResponse, error) {
+func (svc *SecurityService) LogIn(ctx context.Context, req *pb.LogInRequest) (*pb.LogInResponse, error) {
 	resp, err := svc.authClient.LogIn(ctx, &pbAuth.LogInRequest{
 		UserCredentials: req.UserCredentials,
 	})

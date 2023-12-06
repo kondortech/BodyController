@@ -8,7 +8,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	pbAuth "github.com/kirvader/BodyController/domains/users/services/base/auth/proto"
+	pbAuth "github.com/kirvader/BodyController/domains/security/services/base/auth/proto"
 	"github.com/kirvader/BodyController/internal/db"
 )
 

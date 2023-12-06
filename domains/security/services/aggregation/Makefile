@@ -2,7 +2,7 @@ include ../../../../internal/setup/CommonVariables.mk
 include ../../../../internal/setup/ServiceCommon.mk
 include ../../../../internal/setup/AggregationService.mk
 
-DOMAIN_NAME = users
+DOMAIN_NAME = security
 SERVICE_PORT = 10000
 
 BASE_AUTH_SERVICE_NAME = users-base-auth

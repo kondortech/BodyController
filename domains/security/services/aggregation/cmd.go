@@ -6,7 +6,7 @@ import (
 	"log"
 	"net"
 
-	"github.com/kirvader/BodyController/domains/users/services/aggregation/src"
+	"github.com/kirvader/BodyController/domains/security/services/aggregation/src"
 	"github.com/kirvader/BodyController/pkg/utils"
 )
 
@@ -22,7 +22,7 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	svc, close, err := src.NewUsersService(ctx)
+	svc, close, err := src.NewSecurityService(ctx)
 	if err != nil {
 		panic(err)
 	}

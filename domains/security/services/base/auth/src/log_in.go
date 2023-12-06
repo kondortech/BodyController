@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kirvader/BodyController/domains/users/models"
-	pbAuth "github.com/kirvader/BodyController/domains/users/services/base/auth/proto"
+	"github.com/kirvader/BodyController/domains/security/models"
+	pbAuth "github.com/kirvader/BodyController/domains/security/services/base/auth/proto"
 
 	"github.com/kirvader/BodyController/internal/auth"
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	pbAuth "github.com/kirvader/BodyController/domains/users/services/base/auth/proto"
+	pbAuth "github.com/kirvader/BodyController/domains/security/services/base/auth/proto"
 	"github.com/kirvader/BodyController/internal/auth"
 	"go.mongodb.org/mongo-driver/bson"
 )
