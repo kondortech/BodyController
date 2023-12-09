@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	pbAuth "github.com/kirvader/BodyController/domains/users/services/base/auth/proto"
+	pbAuth "github.com/kirvader/BodyController/domains/security/services/base/auth/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )

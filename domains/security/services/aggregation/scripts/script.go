@@ -17,7 +17,7 @@ func main() {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
-	client := pbSecurity.NewUsersClient(conn)
+	client := pbSecurity.NewSecurityClient(conn)
 
 	resp, err := client.CreateUser(context.Background(), &pbSecurity.CreateUserRequest{
 		UserCredentials: &userModels.UserCredentials{

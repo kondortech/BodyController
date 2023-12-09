@@ -8,7 +8,7 @@ option go_package = "github.com/kirvader/BodyController/domains/nutrition/models
 message Ingredient {
 	string hex_id = 1;
 
-	domains.nutrition.models.Macros100g macros100g = 2;
+	domains.nutrition.models.Macros macros100g = 2;
 	string title = 3;
 	string description = 4;
 	string author = 5;
