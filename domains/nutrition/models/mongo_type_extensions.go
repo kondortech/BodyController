@@ -106,8 +106,8 @@ func (mongo *QuantityMongoDB) ConvertToProtoMessage() (*Quantity, error) {
 }
 
 type WeightedIngredientMongoDB struct {
-	Ingredient IngredientMongoDB `bson:"ingredient"`
-	Quantity   QuantityMongoDB   `bson:"quantity"`
+	IngredientHexId primitive.ObjectID `bson:"ingredient_hex_id"`
+	Quantity        QuantityMongoDB    `bson:"quantity"`
 }
 
 func (proto *WeightedIngredient) ConvertToMongoDocument() (*WeightedIngredientMongoDB, error) {
@@ -115,13 +115,15 @@ func (proto *WeightedIngredient) ConvertToMongoDocument() (*WeightedIngredientMo
 	mongoQuantity, _ := proto.Quantity.ConvertToMongoDocument()
 
 	return &WeightedIngredientMongoDB{
-		Ingredient: *mongoIngredient,
-		Quantity:   *mongoQuantity,
+		IngredientHexId: mongoIngredient.Id,
+		Quantity:        *mongoQuantity,
 	}, nil
 }
 
 func (mongo *WeightedIngredientMongoDB) ConvertToProtoMessage() (*WeightedIngredient, error) {
-	protoIngredient, _ := mongo.Ingredient.ConvertToProtoMessage()
+	protoIngredient := &Ingredient{
+		HexId: mongo.IngredientHexId.Hex(),
+	}
 	protoQuantity, _ := mongo.Quantity.ConvertToProtoMessage()
 	return &WeightedIngredient{
 		Ingredient: protoIngredient,
