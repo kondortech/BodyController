@@ -3,8 +3,8 @@ syntax = "proto3";
 import "google/protobuf/wrappers.proto";
 import "domains/nutrition/models/ingredient.proto";
 
-package domains.users.services.base.auth;
-option go_package = "github.com/kirvader/BodyController/domains/users/services/base/auth/proto";
+package domains.nutrition.services.base.ingredient;
+option go_package = "github.com/kirvader/BodyController/domains/nutrition/services/base/ingredient/proto";
 
 service Ingredient {
   	rpc CreateIngredient(CreateIngredientRequest) returns (CreateIngredientResponse);
