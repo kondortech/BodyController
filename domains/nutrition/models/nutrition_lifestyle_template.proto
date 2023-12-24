@@ -2,22 +2,13 @@ syntax = "proto3";
 
 import "domains/nutrition/models/macros.proto";
 
+import "pkg/types/weekday.proto";
+
 import "google/protobuf/timestamp.proto";
 
 
 package domains.nutrition.models;
 option go_package = "github.com/kirvader/BodyController/domains/nutrition/models";
-
-enum Weekday {
-    NotSet = 0;
-	Monday = 1;
-	Tuesday = 2;
-	Wednesday = 3;
-    Thursday = 4;
-    Friday = 5;
-    Saturday = 6;
-    Sunday = 7;
-};
 
 message NutritionStep {
     domains.nutrition.models.Macros macros_requirements = 1;
@@ -33,5 +24,5 @@ message NutritionLifestyleTemplate {
     int64 cycle_duration_days = 4;
 	repeated NutritionStep nutrition_steps = 5;
 	domains.nutrition.models.Macros average_daily_macros = 6;
-    Weekday starting_weekday = 7;
+    pkg.types.Weekday starting_weekday = 7;
 };

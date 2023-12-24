@@ -3,19 +3,11 @@ package models
 import (
 	"fmt"
 
+	pbTypes "github.com/kirvader/BodyController/pkg/types"
+
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
-
-func EncodeWeekday(weekday Weekday) int32 {
-	return int32(weekday)
-}
-
-func DecodeWeekday(value int32) Weekday {
-	return Weekday(value)
-}
-
-func ConvertToMongoField()
 
 type NutritionStepMongoDB struct {
 	MacrosRequirements MacrosMongoDB `bson:"macros_requirements"`
@@ -65,7 +57,7 @@ func (proto *NutritionLifestyleTemplate) ConvertToMongoDocument() (*NutritionLif
 		CycleDurationDays:  proto.CycleDurationDays,
 		NutritionSteps:     make([]NutritionStepMongoDB, 0, len(proto.NutritionSteps)),
 		AverageDailyMacros: *mongoMacros,
-		StartingWeekday:    EncodeWeekday(proto.StartingWeekday),
+		StartingWeekday:    pbTypes.EncodeWeekday(proto.StartingWeekday),
 	}
 
 	for _, protoNutritionStep := range proto.NutritionSteps {
@@ -76,7 +68,7 @@ func (proto *NutritionLifestyleTemplate) ConvertToMongoDocument() (*NutritionLif
 	if len(proto.GetHexId()) != 0 {
 		objectId, err := primitive.ObjectIDFromHex(proto.GetHexId())
 		if err != nil {
-			return nil, fmt.Errorf("Recipe.ConvertToMongoDocument returned error: %v", err)
+			return nil, fmt.Errorf("NutritionLifestyleTemplate.ConvertToMongoDocument returned error: %v", err)
 		}
 		mongo.HexId = objectId
 	}
@@ -93,7 +85,7 @@ func (mongo *NutritionLifestyleTemplateMongoDB) ConvertToProtoMessage() (*Nutrit
 		CycleDurationDays:  mongo.CycleDurationDays,
 		NutritionSteps:     make([]*NutritionStep, 0, len(mongo.NutritionSteps)),
 		AverageDailyMacros: protoMacros,
-		StartingWeekday:    DecodeWeekday(mongo.StartingWeekday),
+		StartingWeekday:    pbTypes.DecodeWeekday(mongo.StartingWeekday),
 	}
 
 	for _, mongoNutritionStep := range mongo.NutritionSteps {

@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+import "pkg/types/datetime.proto";
+import "domains/nutrition/models/ingredient.proto";
+import "domains/nutrition/models/macros.proto";
+
+package domains.nutrition.models;
+option go_package = "github.com/kirvader/BodyController/domains/nutrition/models";
+
+
+enum MealStatus {
+    NOT_SET = 0;
+    SUGGESTED = 1;
+    PLANNED = 2;
+    READY_TO_BE_COOKED = 3;
+    COOKED = 4;
+    CONSUMED = 5;
+};
+
+message NutritionStepRef {
+    int64 execution_cycle_number = 1;
+    int64 nutrition_step_index = 2;
+};
+
+message Meal {
+    string username = 1;
+    NutritionStepRef nutrition_step_ref = 2;
+    string personal_nutrition_lifestyle_id = 3;
+    pkg.types.DateTime status_update_time = 4;
+    MealStatus meal_status = 5;
+    
+    string recipe_id = 6;
+    repeated domains.nutrition.models.WeightedIngredient meal_required_ingredients = 7;
+    domains.nutrition.models.Macros macros = 8;
+};

@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+import "pkg/types/date.proto";
+
+package domains.nutrition.models;
+option go_package = "github.com/kirvader/BodyController/domains/nutrition/models";
+
+
+message PersonalNutritionLifestyle {
+	string hex_id = 1;
+    string title = 2;
+    string username = 3;
+    string nutrition_lifestyle_template_hex_id = 4;
+    pkg.types.Date first_day = 5;
+    pkg.types.Date last_day = 6;
+};
