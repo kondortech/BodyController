@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+import "domains/nutrition/models/meal.proto";
+
+package domains.nutrition.services.base.meal;
+option go_package = "github.com/kirvader/BodyController/domains/nutrition/services/base/meal/proto";
+
+service Meal {
+  	rpc CreateMeal(CreateMealRequest) returns (CreateMealResponse);
+	rpc DeleteMeal(DeleteMealRequest) returns (DeleteMealResponse);
+	rpc UpdateMeal(UpdateMealRequest) returns (UpdateMealResponse);
+
+	rpc GetMeal(GetMealRequest) returns (GetMealResponse);
+	rpc ListMeals(ListMealsRequest) returns (ListMealsResponse);
+}
+
+message CreateMealRequest {
+	domains.nutrition.models.Meal meal = 1;
+};
+
+message CreateMealResponse {
+	string meal_hex_id = 1;
+};
+
+message DeleteMealRequest {
+	string meal_hex_id = 1;
+};
+
+message DeleteMealResponse {};
+
+message UpdateMealRequest {
+	string meal_hex_id = 1;
+	domains.nutrition.models.Meal new_meal_info = 2;
+};
+
+message UpdateMealResponse {};
+
+message GetMealRequest {
+	string meal_hex_id = 1;
+};
+
+message GetMealResponse {
+	domains.nutrition.models.Meal meal = 1;
+};
+
+message ListMealsRequest {
+	int32 page_size = 1;
+	google.protobuf.StringValue last_page_token = 2;
+};
+
+message ListMealsResponse {
+	repeated domains.nutrition.models.Meal meals = 1;
+	google.protobuf.StringValue retrieved_page_token = 2;
+};
+
+
