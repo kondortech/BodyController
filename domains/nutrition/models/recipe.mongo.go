@@ -15,11 +15,11 @@ type RecipeMongoDB struct {
 	Author                  string                      `bson:"author"`
 	RequiredIngredients     []WeightedIngredientMongoDB `bson:"required_ingredients"`
 	CookingTime             int64                       `bson:"cooking_time"`
-	Macros                  MacrosMongoDB               `bson:"macros"`
+	Macros100G              MacrosMongoDB               `bson:"macros_100g"`
 }
 
 func (proto *Recipe) ConvertToMongoDocument() (*RecipeMongoDB, error) {
-	mongoMacros, _ := proto.Macros.ConvertToMongoDocument()
+	mongoMacros, _ := proto.Macros100G.ConvertToMongoDocument()
 
 	mongo := &RecipeMongoDB{
 		Title:                   proto.Title,
@@ -28,7 +28,7 @@ func (proto *Recipe) ConvertToMongoDocument() (*RecipeMongoDB, error) {
 		Author:                  proto.Author,
 		RequiredIngredients:     make([]WeightedIngredientMongoDB, 0, len(proto.RequiredIngredients)),
 		CookingTime:             proto.CookingTime.Seconds,
-		Macros:                  *mongoMacros,
+		Macros100G:              *mongoMacros,
 	}
 
 	for _, protoWeightedIngredient := range proto.RequiredIngredients {
@@ -48,7 +48,7 @@ func (proto *Recipe) ConvertToMongoDocument() (*RecipeMongoDB, error) {
 }
 
 func (mongo *RecipeMongoDB) ConvertToProtoMessage() (*Recipe, error) {
-	protoMacros, _ := mongo.Macros.ConvertToProtoMessage()
+	protoMacros, _ := mongo.Macros100G.ConvertToProtoMessage()
 	proto := &Recipe{
 		HexId:                   mongo.Id.Hex(),
 		Title:                   mongo.Title,
@@ -57,7 +57,7 @@ func (mongo *RecipeMongoDB) ConvertToProtoMessage() (*Recipe, error) {
 		Author:                  mongo.Author,
 		RequiredIngredients:     make([]*WeightedIngredient, 0, len(mongo.RequiredIngredients)),
 		CookingTime:             &durationpb.Duration{Seconds: mongo.CookingTime},
-		Macros:                  protoMacros,
+		Macros100G:              protoMacros,
 	}
 
 	for _, mongoWeightedIngredient := range mongo.RequiredIngredients {

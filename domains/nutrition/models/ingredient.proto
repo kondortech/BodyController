@@ -27,4 +27,6 @@ message Ingredient {
 	string title = 3;
 	string description = 4;
 	string author = 5;
+
+	string recipe_id = 6;
 };
