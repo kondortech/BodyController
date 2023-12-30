@@ -70,7 +70,7 @@ func (svc *RecipeService) ListIngredients(ctx context.Context, req *ListRecipesR
 		}
 		recipe, err := mongoRecipe.ConvertToProtoMessage()
 		if err != nil {
-			return nil, fmt.Errorf("error parsing mongo ingredient: %v", err)
+			return nil, fmt.Errorf("error parsing mongo recipe: %v", err)
 		}
 		result = append(result, recipe)
 	}
