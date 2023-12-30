@@ -1,35 +1,18 @@
 services:
-  nutrition-aggregation-service:
+  nutrition-service:
     image: ${AGGREGATION_SERVICE_NAME}
     container_name: ${AGGREGATION_SERVICE_NAME}
     environment:
       - SERVICE_PORT=${AGGREGATION_SERVICE_PORT}
-      - BASE_INGREDIENT_IP=${BASE_INGREDIENT_SERVICE_NAME}
-      - BASE_INGREDIENT_PORT=${BASE_INGREDIENT_SERVICE_PORT}
+      - MONGODB_IP=${MONGODB_IP}
+      - MONGODB_PORT=${MONGODB_PORT}
     expose:
       - ${AGGREGATION_SERVICE_PORT}
     ports:
       - ${PUBLISHED_AGGREGATION_SERVICE_PORT}:${AGGREGATION_SERVICE_PORT}
     networks:
-      - nutrition-domain-network
-    depends_on:
-      - nutrition-base-ingredient
-  nutrition-base-ingredient:
-    image: ${BASE_INGREDIENT_SERVICE_NAME}
-    container_name: ${BASE_INGREDIENT_SERVICE_NAME}
-    environment:
-      - SERVICE_PORT=${BASE_INGREDIENT_SERVICE_PORT}
-      - MONGODB_IP=${MONGODB_IP}
-      - MONGODB_PORT=${MONGODB_PORT}
-    expose:
-      - ${BASE_INGREDIENT_SERVICE_PORT}
-    ports:
-      - ${PUBLISHED_BASE_INGREDIENT_SERVICE_PORT}:${BASE_INGREDIENT_SERVICE_PORT}
-    networks:
-      - nutrition-domain-network
       - mongodb-network
 
 networks:
-  nutrition-domain-network:
   mongodb-network:
     external: true

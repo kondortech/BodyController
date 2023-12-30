@@ -3,11 +3,9 @@ package src
 import (
 	"context"
 	"fmt"
-	"log"
 	"net"
 
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
 
 	pb "github.com/kirvader/BodyController/domains/nutrition/proto"
@@ -16,8 +14,6 @@ import (
 	nutritionLifestyleTemplate "github.com/kirvader/BodyController/domains/nutrition/services/nutrition_lifestyle_template"
 	personalNutritionLifestyle "github.com/kirvader/BodyController/domains/nutrition/services/personal_nutrition_lifestyle"
 	recipe "github.com/kirvader/BodyController/domains/nutrition/services/recipe"
-
-	"github.com/kirvader/BodyController/pkg/utils"
 )
 
 type NutritionService struct {
@@ -31,21 +27,7 @@ type NutritionService struct {
 }
 
 func NewNutritionService(ctx context.Context) (*NutritionService, func(), error) {
-	ingredientServiceClientPort := utils.GetEnvWithDefault("BASE_INGREDIENT_IP", "0.0.0.0")
-	ingredientServiceClientIP := utils.GetEnvWithDefault("BASE_INGREDIENT_PORT", "20001")
-
-	ingredientServiceURI := fmt.Sprintf("%s:%s", ingredientServiceClientPort, ingredientServiceClientIP)
-	log.Printf("base-ingredient uri: %s", ingredientServiceURI)
-
 	closeFunctions := make([]func(), 0)
-
-	conn, err := grpc.Dial(ingredientServiceURI, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		log.Fatalf("did not connect: %v", err)
-	}
-	closeFunctions = append(closeFunctions, func() {
-		conn.Close()
-	})
 
 	ingredientService, ingredientCloseFunc, err := ingredient.NewService(ctx)
 	closeFunctions = append(closeFunctions, ingredientCloseFunc)
