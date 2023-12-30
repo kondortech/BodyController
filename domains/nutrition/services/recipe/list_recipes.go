@@ -5,64 +5,74 @@ import (
 	"fmt"
 
 	"github.com/kirvader/BodyController/domains/nutrition/models"
-	pbIngredient "github.com/kirvader/BodyController/domains/nutrition/services/base/ingredient/proto"
+
 	"github.com/kirvader/BodyController/pkg/utils"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"google.golang.org/protobuf/types/known/wrapperspb"
 )
+
+type ListRecipesRequest struct {
+	PageSize      int32
+	LastPageToken *string
+}
+
+type ListRecipesResponse struct {
+	Recipes            []*models.Recipe
+	RetrievedPageToken *string
+}
 
 const DefaultPageSize = 10
 
-func (svc *IngredientService) ListIngredients(ctx context.Context, req *pbIngredient.ListIngredientsRequest) (*pbIngredient.ListIngredientsResponse, error) {
+func (svc *RecipeService) ListIngredients(ctx context.Context, req *ListRecipesRequest) (*ListRecipesResponse, error) {
 	if req.PageSize <= 0 {
 		req.PageSize = DefaultPageSize
 	}
 
-	ingredientsCollection := svc.mongoClient.Database("BodyController").Collection("Ingredients")
+	coll := svc.mongoClient.Database("BodyController").Collection("Recipes")
 
 	var pageToRetrieve *utils.Page
-	if req.GetLastPageToken() == nil {
+	if req.LastPageToken == nil {
 		pageToRetrieve = &utils.Page{
-			PageSize:   req.GetPageSize(),
+			PageSize:   req.PageSize,
 			PageOffset: 0,
 		}
 	} else {
-		lastRetrievedPage, err := utils.PageFromToken(req.GetLastPageToken().GetValue())
+		lastRetrievedPage, err := utils.PageFromToken(*req.LastPageToken)
 		if err != nil {
 			return nil, fmt.Errorf("error decoding last page token: %v", err)
 		}
 		pageToRetrieve = &utils.Page{
-			PageSize:   req.GetPageSize(),
+			PageSize:   req.PageSize,
 			PageOffset: lastRetrievedPage.PageOffset + lastRetrievedPage.PageSize,
 		}
 	}
 
 	options := options.Find()
 	// TODO add filters, maybe also by taste - so waiting
-	options.SetSort(bson.M{"macros_100g.calories": 1})
+	options.SetSort(bson.M{"title": 1})
 	options.SetSkip(int64(pageToRetrieve.PageOffset))
 	options.SetLimit(int64(pageToRetrieve.PageSize))
 
-	cursor, err := ingredientsCollection.Find(ctx, bson.M{}, options)
+	cursor, err := coll.Find(ctx, bson.M{}, options)
 	if err != nil {
 		panic(err)
 	}
 	defer cursor.Close(ctx)
 
-	result := make([]*models.Ingredient, 0, pageToRetrieve.PageSize)
+	result := make([]*models.Recipe, 0, pageToRetrieve.PageSize)
 
 	for cursor.Next(ctx) {
-		var mongoIngredient models.IngredientMongoDB
-		err := cursor.Decode(&mongoIngredient)
+		var mongoRecipe models.RecipeMongoDB
+		err := cursor.Decode(&mongoRecipe)
 		if err != nil {
 			return nil, fmt.Errorf("cursor error: %v", err)
 		}
-		ingredient, err := mongoIngredient.ConvertToProtoMessage()
+		recipe, err := mongoRecipe.ConvertToProtoMessage()
 		if err != nil {
 			return nil, fmt.Errorf("error parsing mongo ingredient: %v", err)
 		}
-		result = append(result, ingredient)
+		result = append(result, recipe)
 	}
 
 	if err := cursor.Err(); err != nil {
@@ -70,8 +80,8 @@ func (svc *IngredientService) ListIngredients(ctx context.Context, req *pbIngred
 	}
 
 	if len(result) < int(req.PageSize) {
-		return &pbIngredient.ListIngredientsResponse{
-			Ingredients: result,
+		return &ListRecipesResponse{
+			Recipes: result,
 		}, nil
 	}
 
@@ -80,8 +90,8 @@ func (svc *IngredientService) ListIngredients(ctx context.Context, req *pbIngred
 		return nil, fmt.Errorf("error when forming page token: %v", err)
 	}
 
-	return &pbIngredient.ListIngredientsResponse{
-		Ingredients:        result,
-		RetrievedPageToken: wrapperspb.String(currentPageToken),
+	return &ListRecipesResponse{
+		Recipes:            result,
+		RetrievedPageToken: &currentPageToken,
 	}, nil
 }

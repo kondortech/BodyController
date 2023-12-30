@@ -3,8 +3,8 @@ syntax = "proto3";
 import "google/protobuf/wrappers.proto";
 import "domains/nutrition/models/ingredient.proto";
 
-package domains.users.services.aggregation;
-option go_package = "github.com/kirvader/BodyController/domains/users/services/aggregation/proto";
+package domains.nutrition.proto;
+option go_package = "github.com/kirvader/BodyController/domains/nutrition/proto";
 
 service Nutrition {
 	rpc GetIngredient(GetIngredientRequest) returns (GetIngredientResponse);

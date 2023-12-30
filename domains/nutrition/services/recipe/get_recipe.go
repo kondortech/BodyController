@@ -4,13 +4,20 @@ import (
 	"context"
 
 	"github.com/kirvader/BodyController/domains/nutrition/models"
-	pbRecipe "github.com/kirvader/BodyController/domains/nutrition/services/base/recipe/proto"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func (svc *RecipeService) GetRecipe(ctx context.Context, req *pbRecipe.GetRecipeRequest) (*pbRecipe.GetRecipeResponse, error) {
+type GetRecipeRequest struct {
+	HexId string
+}
+
+type GetRecipeResponse struct {
+	Recipe *models.Recipe
+}
+
+func (svc *RecipeService) GetRecipe(ctx context.Context, req *GetRecipeRequest) (*GetRecipeResponse, error) {
 	coll := svc.mongoClient.Database("BodyController").Collection("Recipes")
 
 	objectId, err := primitive.ObjectIDFromHex(req.HexId)
@@ -18,21 +25,21 @@ func (svc *RecipeService) GetRecipe(ctx context.Context, req *pbRecipe.GetRecipe
 		return nil, err
 	}
 
-	var recipeMongoDB models.RecipeMongoDB
+	var mongo models.RecipeMongoDB
 	err = coll.FindOne(context.TODO(),
 		bson.D{{Key: "_id", Value: objectId}},
 		options.FindOne()).
-		Decode(&recipeMongoDB)
+		Decode(&mongo)
 	if err != nil {
 		return nil, err
 	}
 
-	recipe, err := recipeMongoDB.ConvertToProtoMessage()
+	proto, err := mongo.ConvertToProtoMessage()
 	if err != nil {
 		return nil, err
 	}
 
-	return &pbRecipe.GetRecipeResponse{
-		Recipe: recipe,
+	return &GetRecipeResponse{
+		Recipe: proto,
 	}, nil
 }
