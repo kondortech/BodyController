@@ -15,7 +15,10 @@ message Recipe {
 	string taste_description = 3;
 	string cooking_steps_description = 4;
 	string author = 5;
-	repeated domains.nutrition.models.WeightedIngredient required_ingredients_proportions = 6;
-	google.protobuf.Duration cooking_time = 7;
-	domains.nutrition.models.Macros macros100g = 8;
+	google.protobuf.Duration cooking_time = 6;
+
+	repeated domains.nutrition.models.WeightedIngredient required_ingredients_proportions = 7;
+	float cooked_amount_gramms = 8;
+
+	domains.nutrition.models.Macros macros100g = 9;
 };

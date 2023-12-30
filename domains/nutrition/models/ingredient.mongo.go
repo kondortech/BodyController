@@ -51,45 +51,17 @@ func (mongoIngredient *IngredientMongoDB) ConvertToProtoMessage() (*Ingredient, 
 	}, nil
 }
 
-func EncodeMeasureUnit(unit MeasureUnit) int32 {
-	return int32(unit)
-}
-
-func DecodeMeasureUnit(unit int32) MeasureUnit {
-	return MeasureUnit(unit)
-}
-
-type QuantityMongoDB struct {
-	MeasureUnit int32   `bson:"measure_unit"`
-	Quantity    float32 `bson:"quantity"`
-}
-
-func (proto *Quantity) ConvertToMongoDocument() (*QuantityMongoDB, error) {
-	return &QuantityMongoDB{
-		Quantity:    proto.Quantity,
-		MeasureUnit: EncodeMeasureUnit(proto.MeasureUnit),
-	}, nil
-}
-
-func (mongo *QuantityMongoDB) ConvertToProtoMessage() (*Quantity, error) {
-	return &Quantity{
-		MeasureUnit: DecodeMeasureUnit(mongo.MeasureUnit),
-		Quantity:    mongo.Quantity,
-	}, nil
-}
-
 type WeightedIngredientMongoDB struct {
 	IngredientHexId primitive.ObjectID `bson:"ingredient_hex_id"`
-	Quantity        QuantityMongoDB    `bson:"quantity"`
+	AmountGramms    float32            `bson:"amount_gramms"`
 }
 
 func (proto *WeightedIngredient) ConvertToMongoDocument() (*WeightedIngredientMongoDB, error) {
 	mongoIngredient, _ := proto.Ingredient.ConvertToMongoDocument()
-	mongoQuantity, _ := proto.Quantity.ConvertToMongoDocument()
 
 	return &WeightedIngredientMongoDB{
 		IngredientHexId: mongoIngredient.Id,
-		Quantity:        *mongoQuantity,
+		AmountGramms:    proto.AmountGramms,
 	}, nil
 }
 
@@ -97,9 +69,8 @@ func (mongo *WeightedIngredientMongoDB) ConvertToProtoMessage() (*WeightedIngred
 	protoIngredient := &Ingredient{
 		HexId: mongo.IngredientHexId.Hex(),
 	}
-	protoQuantity, _ := mongo.Quantity.ConvertToProtoMessage()
 	return &WeightedIngredient{
-		Ingredient: protoIngredient,
-		Quantity:   protoQuantity,
+		Ingredient:   protoIngredient,
+		AmountGramms: mongo.AmountGramms,
 	}, nil
 }

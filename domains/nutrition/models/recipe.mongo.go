@@ -13,8 +13,9 @@ type RecipeMongoDB struct {
 	TasteDescription               string                      `bson:"taste_description"`
 	CookingStepsDescription        string                      `bson:"cooking_steps_description"`
 	Author                         string                      `bson:"author"`
-	RequiredIngredientsProportions []WeightedIngredientMongoDB `bson:"required_ingredients_proportions"`
 	CookingTime                    int64                       `bson:"cooking_time"`
+	RequiredIngredientsProportions []WeightedIngredientMongoDB `bson:"required_ingredients_proportions"`
+	CookedAmountGramms             float32                     `bson:"cooked_amount_gramms"`
 	Macros100G                     MacrosMongoDB               `bson:"macros_100g"`
 }
 
@@ -26,8 +27,9 @@ func (proto *Recipe) ConvertToMongoDocument() (*RecipeMongoDB, error) {
 		TasteDescription:               proto.TasteDescription,
 		CookingStepsDescription:        proto.CookingStepsDescription,
 		Author:                         proto.Author,
-		RequiredIngredientsProportions: make([]WeightedIngredientMongoDB, 0, len(proto.RequiredIngredientsProportions)),
 		CookingTime:                    proto.CookingTime.Seconds,
+		RequiredIngredientsProportions: make([]WeightedIngredientMongoDB, 0, len(proto.RequiredIngredientsProportions)),
+		CookedAmountGramms:             proto.CookedAmountGramms,
 		Macros100G:                     *mongoMacros,
 	}
 
@@ -55,8 +57,9 @@ func (mongo *RecipeMongoDB) ConvertToProtoMessage() (*Recipe, error) {
 		TasteDescription:               mongo.TasteDescription,
 		CookingStepsDescription:        mongo.CookingStepsDescription,
 		Author:                         mongo.Author,
-		RequiredIngredientsProportions: make([]*WeightedIngredient, 0, len(mongo.RequiredIngredientsProportions)),
 		CookingTime:                    &durationpb.Duration{Seconds: mongo.CookingTime},
+		RequiredIngredientsProportions: make([]*WeightedIngredient, 0, len(mongo.RequiredIngredientsProportions)),
+		CookedAmountGramms:             mongo.CookedAmountGramms,
 		Macros100G:                     protoMacros,
 	}
 

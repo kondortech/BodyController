@@ -5,28 +5,16 @@ import "domains/nutrition/models/macros.proto";
 package domains.nutrition.models;
 option go_package = "github.com/kirvader/BodyController/domains/nutrition/models";
 
-enum MeasureUnit {
-	Gramm = 0;
-	SingleIngredientUnit = 1;
-}
-
-message Quantity {
-	MeasureUnit measure_unit = 1;
-	float quantity = 2;
-}
-
 message WeightedIngredient {
 	domains.nutrition.models.Ingredient ingredient = 1;
-	Quantity quantity = 2;
+	float amount_gramms = 2;
 };
 
 message Ingredient {
 	string hex_id = 1;
-
 	domains.nutrition.models.Macros macros100g = 2;
 	string title = 3;
 	string description = 4;
 	string author = 5;
-
 	string recipe_id = 6;
 };
