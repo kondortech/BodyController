@@ -6,7 +6,7 @@ import (
 	"log"
 	"net"
 
-	"github.com/kirvader/BodyController/domains/nutrition/services/aggregation/src"
+	"github.com/kirvader/BodyController/domains/nutrition/src"
 	"github.com/kirvader/BodyController/pkg/utils"
 )
 
@@ -23,10 +23,10 @@ func main() {
 	defer cancel()
 
 	svc, close, err := src.NewNutritionService(ctx)
+	defer close()
 	if err != nil {
 		panic(err)
 	}
-	defer close()
 
 	if err := svc.Serve(listener); err != nil {
 		log.Fatalf("failed to serve: %v", err)

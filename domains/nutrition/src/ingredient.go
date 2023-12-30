@@ -3,34 +3,48 @@ package src
 import (
 	"context"
 
-	pb "github.com/kirvader/BodyController/domains/nutrition/services/aggregation/proto"
-	pbIngredient "github.com/kirvader/BodyController/domains/nutrition/services/base/ingredient/proto"
+	pb "github.com/kirvader/BodyController/domains/nutrition/proto"
+	ingredient "github.com/kirvader/BodyController/domains/nutrition/services/ingredient"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 func (svc *NutritionService) GetIngredient(ctx context.Context, req *pb.GetIngredientRequest) (*pb.GetIngredientResponse, error) {
-	ingredientServiceResponse, err := svc.ingredientServiceClient.GetIngredient(ctx, &pbIngredient.GetIngredientRequest{
-		IngredientHexId: req.GetIngredientHexId(),
+	ingredientServiceResponse, err := svc.ingredientService.Get(ctx, &ingredient.GetIngredientRequest{
+		HexId: req.GetIngredientHexId(),
 	})
 	if err != nil {
 		return nil, err
 	}
 
 	return &pb.GetIngredientResponse{
-		Ingredient: ingredientServiceResponse.GetIngredient(),
+		Ingredient: ingredientServiceResponse.Ingredient,
 	}, nil
 }
 
 func (svc *NutritionService) ListIngredients(ctx context.Context, req *pb.ListIngredientsRequest) (*pb.ListIngredientsResponse, error) {
-	ingredientServiceResponse, err := svc.ingredientServiceClient.ListIngredients(ctx, &pbIngredient.ListIngredientsRequest{
+	var lastPageToken *string = nil
+	if req.LastPageToken != nil {
+		lastPageToken = &req.LastPageToken.Value
+	}
+
+	ingredientServiceResponse, err := svc.ingredientService.List(ctx, &ingredient.ListIngredientsRequest{
 		PageSize:      req.PageSize,
-		LastPageToken: req.LastPageToken,
+		LastPageToken: lastPageToken,
 	})
 	if err != nil {
 		return nil, err
 	}
 
+	if ingredientServiceResponse.RetrievedPageToken == nil {
+		return &pb.ListIngredientsResponse{
+			Ingredients: ingredientServiceResponse.Ingredients,
+		}, nil
+	}
+
 	return &pb.ListIngredientsResponse{
-		Ingredients:        ingredientServiceResponse.Ingredients,
-		RetrievedPageToken: ingredientServiceResponse.RetrievedPageToken,
+		Ingredients: ingredientServiceResponse.Ingredients,
+		RetrievedPageToken: &wrapperspb.StringValue{
+			Value: *ingredientServiceResponse.RetrievedPageToken,
+		},
 	}, nil
 }

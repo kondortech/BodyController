@@ -15,10 +15,12 @@ type RecipeService struct {
 func NewRecipeService(ctx context.Context) (*RecipeService, func(), error) {
 	mongoClient, disconnectMongoClient, err := db.InitMongoDBClientFromENV(ctx)
 	if err != nil {
-		panic(err)
+		return nil, func() {}, err
 	}
 	if err = db.PingMongoDb(ctx, mongoClient); err != nil {
-		panic(err)
+		return nil, func() {
+			disconnectMongoClient()
+		}, err
 	}
 
 	return &RecipeService{
