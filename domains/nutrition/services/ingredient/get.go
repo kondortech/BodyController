@@ -17,7 +17,7 @@ type GetIngredientResponse struct {
 	Ingredient *models.Ingredient
 }
 
-func (svc *IngredientService) Get(ctx context.Context, req *GetIngredientRequest) (*GetIngredientResponse, error) {
+func (svc *Service) Get(ctx context.Context, req *GetIngredientRequest) (*GetIngredientResponse, error) {
 	coll := svc.mongoClient.Database("BodyController").Collection("Ingredients")
 
 	objectId, err := primitive.ObjectIDFromHex(req.HexId)

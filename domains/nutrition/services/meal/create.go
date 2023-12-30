@@ -16,7 +16,7 @@ type CreateMealResponse struct {
 	HexId string
 }
 
-func (svc *MealService) Create(ctx context.Context, req *CreateMealRequest) (*CreateMealResponse, error) {
+func (svc *Service) Create(ctx context.Context, req *CreateMealRequest) (*CreateMealResponse, error) {
 	coll := svc.mongoClient.Database("BodyController").Collection("Meals")
 
 	mongo, err := req.Meal.ConvertToMongoDocument()

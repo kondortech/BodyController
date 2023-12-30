@@ -14,7 +14,7 @@ type DeletePersonalNutritionLifestyleRequest struct {
 
 type DeletePersonalNutritionLifestyleResponse struct{}
 
-func (svc *PersonalNutritionLifestyleService) Delete(ctx context.Context, req *DeletePersonalNutritionLifestyleRequest) (*DeletePersonalNutritionLifestyleResponse, error) {
+func (svc *Service) Delete(ctx context.Context, req *DeletePersonalNutritionLifestyleRequest) (*DeletePersonalNutritionLifestyleResponse, error) {
 	coll := svc.mongoClient.Database("BodyController").Collection("PersonalNutritionLifestyles")
 
 	objectId, err := primitive.ObjectIDFromHex(req.HexId)

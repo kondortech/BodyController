@@ -17,7 +17,7 @@ type GetRecipeResponse struct {
 	Recipe *models.Recipe
 }
 
-func (svc *RecipeService) Get(ctx context.Context, req *GetRecipeRequest) (*GetRecipeResponse, error) {
+func (svc *Service) Get(ctx context.Context, req *GetRecipeRequest) (*GetRecipeResponse, error) {
 	coll := svc.mongoClient.Database("BodyController").Collection("Recipes")
 
 	objectId, err := primitive.ObjectIDFromHex(req.HexId)

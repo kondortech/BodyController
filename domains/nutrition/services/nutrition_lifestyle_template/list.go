@@ -22,7 +22,7 @@ type ListNutritionLifestyleTemplatesResponse struct {
 
 const DefaultPageSize = 10
 
-func (svc *NutritionLifestyleTemplateService) ListIngredients(ctx context.Context, req *ListNutritionLifestyleTemplatesRequest) (*ListNutritionLifestyleTemplatesResponse, error) {
+func (svc *Service) ListIngredients(ctx context.Context, req *ListNutritionLifestyleTemplatesRequest) (*ListNutritionLifestyleTemplatesResponse, error) {
 	if req.PageSize <= 0 {
 		req.PageSize = DefaultPageSize
 	}

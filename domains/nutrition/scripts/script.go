@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	pbNutrition "github.com/kirvader/BodyController/domains/nutrition/services/aggregation/proto"
+	pbNutrition "github.com/kirvader/BodyController/domains/nutrition/proto"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"

@@ -17,7 +17,7 @@ type GetPersonalNutritionLifestyleResponse struct {
 	PersonalNutritionLifestyle *models.PersonalNutritionLifestyle
 }
 
-func (svc *PersonalNutritionLifestyleService) GetIngredient(ctx context.Context, req *GetPersonalNutritionLifestyleRequest) (*GetPersonalNutritionLifestyleResponse, error) {
+func (svc *Service) GetIngredient(ctx context.Context, req *GetPersonalNutritionLifestyleRequest) (*GetPersonalNutritionLifestyleResponse, error) {
 	coll := svc.mongoClient.Database("BodyController").Collection("PersonalNutritionLifestyles")
 
 	objectId, err := primitive.ObjectIDFromHex(req.HexId)

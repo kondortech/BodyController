@@ -17,7 +17,7 @@ type GetMealResponse struct {
 	Meal *models.Meal
 }
 
-func (svc *MealService) Get(ctx context.Context, req *GetMealRequest) (*GetMealResponse, error) {
+func (svc *Service) Get(ctx context.Context, req *GetMealRequest) (*GetMealResponse, error) {
 	coll := svc.mongoClient.Database("BodyController").Collection("Meals")
 
 	objectId, err := primitive.ObjectIDFromHex(req.HexId)

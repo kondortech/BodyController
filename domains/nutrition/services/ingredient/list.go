@@ -22,7 +22,7 @@ type ListIngredientsResponse struct {
 
 const DefaultPageSize = 10
 
-func (svc *IngredientService) List(ctx context.Context, req *ListIngredientsRequest) (*ListIngredientsResponse, error) {
+func (svc *Service) List(ctx context.Context, req *ListIngredientsRequest) (*ListIngredientsResponse, error) {
 	if req.PageSize <= 0 {
 		req.PageSize = DefaultPageSize
 	}

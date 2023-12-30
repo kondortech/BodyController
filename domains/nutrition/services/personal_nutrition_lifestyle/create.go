@@ -16,7 +16,7 @@ type CreatePersonalNutritionLifestyleResponse struct {
 	HexId string
 }
 
-func (svc *PersonalNutritionLifestyleService) Create(ctx context.Context, req *CreatePersonalNutritionLifestyleRequest) (*CreatePersonalNutritionLifestyleResponse, error) {
+func (svc *Service) Create(ctx context.Context, req *CreatePersonalNutritionLifestyleRequest) (*CreatePersonalNutritionLifestyleResponse, error) {
 	coll := svc.mongoClient.Database("BodyController").Collection("PersonalNutritionLifestyles")
 
 	mongo, err := req.PersonalNutritionLifestyle.ConvertToMongoDocument()

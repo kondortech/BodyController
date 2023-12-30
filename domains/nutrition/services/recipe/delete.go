@@ -14,7 +14,7 @@ type DeleteRecipeRequest struct {
 
 type DeleteRecipeResponse struct{}
 
-func (svc *RecipeService) Delete(ctx context.Context, req *DeleteRecipeRequest) (*DeleteRecipeResponse, error) {
+func (svc *Service) Delete(ctx context.Context, req *DeleteRecipeRequest) (*DeleteRecipeResponse, error) {
 	coll := svc.mongoClient.Database("BodyController").Collection("Recipes")
 
 	objectId, err := primitive.ObjectIDFromHex(req.HexId)

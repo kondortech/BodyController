@@ -8,11 +8,11 @@ import (
 	"github.com/kirvader/BodyController/internal/db"
 )
 
-type IngredientService struct {
+type Service struct {
 	mongoClient *mongo.Client
 }
 
-func NewIngredientService(ctx context.Context) (*IngredientService, func(), error) {
+func NewService(ctx context.Context) (*Service, func(), error) {
 	mongoClient, disconnectMongoClient, err := db.InitMongoDBClientFromENV(ctx)
 	if err != nil {
 		return nil, func() {}, err
@@ -23,7 +23,7 @@ func NewIngredientService(ctx context.Context) (*IngredientService, func(), erro
 		}, err
 	}
 
-	return &IngredientService{
+	return &Service{
 		mongoClient: mongoClient,
 	}, disconnectMongoClient, nil
 }

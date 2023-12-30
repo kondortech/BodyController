@@ -18,7 +18,7 @@ type UpdatePersonalNutritionLifestyleResponse struct {
 	HexId string
 }
 
-func (svc *PersonalNutritionLifestyleService) UpdateIngredient(ctx context.Context, req *UpdatePersonalNutritionLifestyleRequest) (*UpdatePersonalNutritionLifestyleResponse, error) {
+func (svc *Service) UpdateIngredient(ctx context.Context, req *UpdatePersonalNutritionLifestyleRequest) (*UpdatePersonalNutritionLifestyleResponse, error) {
 	coll := svc.mongoClient.Database("BodyController").Collection("PersonalNutritionLifestyles")
 
 	objectId, err := primitive.ObjectIDFromHex(req.HexId)
