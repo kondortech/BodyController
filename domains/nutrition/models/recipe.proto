@@ -18,7 +18,7 @@ message Recipe {
 	google.protobuf.Duration cooking_time = 6;
 
 	repeated domains.nutrition.models.WeightedIngredient required_ingredients_proportions = 7;
-	float cooked_amount_gramms = 8;
+	float assigned_amount_gramms = 8; // amount of food which will come out from cooking ingredients listed in required_ingredients_proportions
 
 	domains.nutrition.models.Macros macros100g = 9;
 };

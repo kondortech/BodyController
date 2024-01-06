@@ -3,8 +3,8 @@ package src
 import (
 	"context"
 
+	ingredient "github.com/kirvader/BodyController/domains/nutrition/modules/ingredient"
 	pb "github.com/kirvader/BodyController/domains/nutrition/proto"
-	ingredient "github.com/kirvader/BodyController/domains/nutrition/services/ingredient"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
