@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "pkg/types/datetime.proto";
+import "pkg/types/date.proto";
 
 package domains.nutrition.models;
 option go_package = "github.com/kirvader/BodyController/domains/nutrition/models";
@@ -17,10 +18,11 @@ enum MealStatus {
 
 message Meal {
     string username = 1;
-    pkg.types.DateTime planned_meal_time = 2;
-    pkg.types.DateTime status_update_time = 3;
-    MealStatus meal_status = 4;
+    pkg.types.Date meal_date = 2;
+    int64 meal_set_index = 3;
+    pkg.types.DateTime status_update_time = 4;
+    MealStatus meal_status = 5;
     
-    string recipe_id = 5;
-    float food_amount_gramms = 6; // cooked amount of food that we need for the planned meal
+    string recipe_id = 6;
+    float food_amount_gramms = 7; // cooked amount of food that we need for the planned meal
 };

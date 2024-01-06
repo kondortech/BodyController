@@ -22,7 +22,8 @@ func DecodeMealStatus(encodedMealString string) (MealStatus, error) {
 
 type MealMongo struct {
 	Username         string                 `bson:"username"`
-	PlannedMealTime  *pbTypes.DateTimeMongo `bson:"planned_meal_time"`
+	MealDate         *pbTypes.DateMongo     `bson:"meal_date"`
+	MealSetIndex     int64                  `bson:"meal_set_index"`
 	StatusUpdateTime *pbTypes.DateTimeMongo `bson:"status_update_time"`
 	MealStatus       string                 `bson:"meal_status"`
 	RecipeId         primitive.ObjectID     `bson:"recipe_id"`
@@ -40,11 +41,11 @@ func (proto *Meal) ConvertToMongoDocument() (*MealMongo, error) {
 		return nil, fmt.Errorf("Meal.ConvertToMongoDocument: returned error when parsing recipe_id: %v", err)
 	}
 
-	plannedMealTimeMongo, _ := proto.PlannedMealTime.ConvertToMongoDocument()
+	mealDateMongo, _ := proto.MealDate.ConvertToMongoDocument()
 
 	return &MealMongo{
 		Username:         proto.Username,
-		PlannedMealTime:  plannedMealTimeMongo,
+		MealDate:         mealDateMongo,
 		StatusUpdateTime: statusUpdateTime,
 		MealStatus:       EncodeMealStatus(proto.MealStatus),
 		RecipeId:         recipeId,
@@ -57,12 +58,12 @@ func (mongo *MealMongo) ConvertToProtoMessage() (*Meal, error) {
 	if err != nil {
 		return nil, err
 	}
-	plannedMealTimeProto, _ := mongo.PlannedMealTime.ConvertToProtoMessage()
+	mealDateProto, _ := mongo.MealDate.ConvertToProtoMessage()
 	statusUpdateTimeProto, _ := mongo.StatusUpdateTime.ConvertToProtoMessage()
 
 	return &Meal{
 		Username:         mongo.Username,
-		PlannedMealTime:  plannedMealTimeProto,
+		MealDate:         mealDateProto,
 		StatusUpdateTime: statusUpdateTimeProto,
 		MealStatus:       mealStatus,
 		RecipeId:         mongo.RecipeId.Hex(),
