@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/field_mask.proto";
+
+package services.human.proto;
+option go_package = "github.com/kirvader/BodyController/services/human/proto";
+
+service Human {
+	rpc CreateIntake(CreateIntakeRequest) returns (CreateIntakeResponse);
+	rpc DeleteIntake(DeleteIntakeRequest) returns (DeleteIntakeResponse);
+	rpc UpdateIntake(UpdateIntakeRequest) returns (UpdateIntakeResponse);
+	rpc ListIntakes(ListIntakesRequest) returns (ListIntakesResponse);
+
+}
+
+message Macros {
+	float calories = 1;
+	float proteins = 2;
+	float carbs = 3;
+	float fats = 4;
+}
+
+message Intake {
+	string id = 1;
+	Macros macros = 2;
+	google.protobuf.Timestamp timestamp = 3;
+	string username = 4;
+}
+
+message CreateIntakeRequest {
+	Intake instance = 1; // id should be empty
+}
+
+message CreateIntakeResponse {
+	string id = 1;
+}
+
+message UpdateIntakeRequest {
+	string id = 1;
+	Intake instance = 2;
+	google.protobuf.FieldMask mask = 3;
+}
+
+message UpdateIntakeResponse {}
+
+message DeleteIntakeRequest {
+	string id = 1;
+}
+
+message DeleteIntakeResponse {}
+
+message ListIntakesRequest {
+	message Filter {
+		string username = 1; // required
+		google.protobuf.Timestamp timestamp_lowerbound = 2;
+		google.protobuf.Timestamp timestamp_upperbound = 3;
+	}
+
+	Filter filter = 1;
+	int32 page_size = 2;
+	int32 page_number = 3;
+}
+
+message ListIntakesResponse {
+	repeated Intake instances = 1;
+}

@@ -1,0 +1,54 @@
+services:
+  human-service:
+    image: ${SERVICE_NAME}
+    container_name: ${SERVICE_NAME}
+    environment:
+      - SERVICE_PORT=50001
+      - MONGODB_IP=mongodb-human
+      - MONGODB_PORT=27017
+    expose:
+      - 50001
+    ports:
+      - 50001:50001
+    networks:
+      - human-int-network
+    depends_on:
+      mongodb-human:
+        condition: service_healthy
+
+  mongodb-human:
+    image: mongo:latest
+    container_name: mongodb-human-container
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb-human-volume:/data/db
+    networks:
+      - human-int-network
+
+  mongodb-human-observer:
+    image: mongo-express:latest
+    container_name: mongodb-human-observer-container
+    ports:
+      - 28001:8081
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongodb-human
+      - ME_CONFIG_MONGODB_PORT=27017
+    networks:
+      - human-int-network
+    depends_on:
+      mongodb-human:
+        condition: service_healthy
+
+volumes:
+  mongodb-human-volume:
+
+networks:
+  human-int-network:
+  human-ext-network:
+    external: true

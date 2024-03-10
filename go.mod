@@ -4,6 +4,7 @@ go 1.21
 
 require (
 	go.mongodb.org/mongo-driver v1.13.0
+	google.golang.org/genproto v0.0.0-20230822172742-b8732ec3820d
 	google.golang.org/grpc v1.59.0
 	google.golang.org/protobuf v1.31.0
 )

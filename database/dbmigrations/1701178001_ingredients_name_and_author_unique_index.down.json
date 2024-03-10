@@ -1,6 +1,0 @@
-[
-    {
-      "dropIndexes": "Ingredients",
-      "index": "unique_title_author"
-    }
-]
