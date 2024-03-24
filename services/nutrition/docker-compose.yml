@@ -1,0 +1,54 @@
+services:
+  nutrition-service:
+    image: ${SERVICE_NAME}
+    container_name: ${SERVICE_NAME}
+    environment:
+      - SERVICE_PORT=50001
+      - MONGODB_IP=mongodb-nutrition
+      - MONGODB_PORT=27017
+    expose:
+      - 50001
+    ports:
+      - 50001:50001
+    networks:
+      - nutrition-int-network
+    depends_on:
+      mongodb-nutrition:
+        condition: service_healthy
+
+  mongodb-nutrition:
+    image: mongo:latest
+    container_name: mongodb-nutrition-container
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb-nutrition-volume:/data/db
+    networks:
+      - nutrition-int-network
+
+  mongodb-nutrition-observer:
+    image: mongo-express:latest
+    container_name: mongodb-nutrition-observer-container
+    ports:
+      - 28001:8081
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongodb-nutrition
+      - ME_CONFIG_MONGODB_PORT=27017
+    networks:
+      - nutrition-int-network
+    depends_on:
+      mongodb-nutrition:
+        condition: service_healthy
+
+volumes:
+  mongodb-nutrition-volume:
+
+networks:
+  nutrition-int-network:
+  nutrition-ext-network:
+    external: true

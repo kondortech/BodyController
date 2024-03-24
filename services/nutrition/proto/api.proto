@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package nutrition.api;
+option go_package = "github.com/kirvader/BodyController/services/nutrition/proto";
+
+import "services/nutrition/proto/models.proto";
+
+service Nutrition {
+	rpc CreateIngredient(CreateIngredientRequest) returns (CreateIngredientResponse);
+	rpc DeleteIngredient(DeleteIngredientRequest) returns (DeleteIngredientResponse);
+	rpc ListIngredients(ListIngredientRequest) returns (ListIngredientsResponse);
+}
+
+message CreateIngredientRequest {
+	nutrition.models.Ingredient entity = 1;
+};
+
+message CreateIngredientResponse {
+	string entity_id = 1;
+};
+
+message DeleteIngredientRequest {
+	string entity_id = 1;
+};
+
+message DeleteIngredientResponse {};
+
+message ListIngredientRequest {
+	message Filter {
+		repeated string entity_ids = 1;
+	};
+	Filter filter = 1;
+	int32 page_size = 2;
+	string page_token = 3;
+};
+
+message ListIngredientsResponse {
+	repeated nutrition.models.Ingredient entities = 1;
+	string next_page_token = 2;
+};
+

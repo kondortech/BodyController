@@ -1,1 +1,0 @@
-ONLY_BASE_SERVICE_DEBUG_NETWORK = mongodb-network

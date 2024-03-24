@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package nutrition.models;
+option go_package = "github.com/kirvader/BodyController/services/nutrition/proto";
+
+message Macros {
+	float calories = 1;
+	float proteins = 2;
+	float carbs = 3;
+	float fats = 4;
+};
+
+message MacrosForWeight {
+    Macros macros = 1;
+    float gramms = 2; // By default it is gonna be set to 100 gramms
+};
+
+message Ingredient {
+    string id = 1;
+    string name = 2;
+    MacrosForWeight macros_for_weight = 3;
+};
+
+message WeightedIngredient {
+    Ingredient ingredient = 1;
+    float gramms = 2;
+};
+
+message Recipe {
+    string id = 1;
+    string name = 2;
+    string recipe_steps = 3; // TODO recipe should be written in a way that doesn't depend on ingredient quantities
+    repeated WeightedIngredient example_ingredients_proportions = 4;
+};
+
+message Dish {
+    string id = 1;
+    string username = 2;
+    string recipe_id = 3;
+    repeated WeightedIngredient weighted_ingredients = 4;
+};
+
+enum MealStatus {
+    Planned = 0;
+    Cooked = 1;
+    Consumed = 2;
+}
+
+message Meal {
+    string id = 1;
+    string username = 2;
+    string dish_id = 3;
+    google.protobuf.Timestamp timestamp = 4;
+    MealStatus status = 5;
+}
