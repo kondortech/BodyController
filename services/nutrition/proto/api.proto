@@ -9,6 +9,10 @@ service Nutrition {
 	rpc CreateIngredient(CreateIngredientRequest) returns (CreateIngredientResponse);
 	rpc DeleteIngredient(DeleteIngredientRequest) returns (DeleteIngredientResponse);
 	rpc ListIngredients(ListIngredientRequest) returns (ListIngredientsResponse);
+
+	rpc CreateRecipe(CreateRecipeRequest) returns (CreateRecipeResponse);
+	rpc DeleteRecipe(DeleteRecipeRequest) returns (DeleteRecipeResponse);
+	rpc ListRecipes(ListRecipeRequest) returns (ListRecipesResponse);
 }
 
 message CreateIngredientRequest {
@@ -26,16 +30,36 @@ message DeleteIngredientRequest {
 message DeleteIngredientResponse {};
 
 message ListIngredientRequest {
-	message Filter {
-		repeated string entity_ids = 1;
-	};
-	Filter filter = 1;
-	int32 page_size = 2;
-	string page_token = 3;
+	int32 page_size = 1;
+	string page_token = 2;
 };
 
 message ListIngredientsResponse {
 	repeated nutrition.models.Ingredient entities = 1;
+	string next_page_token = 2;
+};
+
+message CreateRecipeRequest {
+	nutrition.models.Recipe entity = 1;
+};
+
+message CreateRecipeResponse {
+	string entity_id = 1;
+};
+
+message DeleteRecipeRequest {
+	string entity_id = 1;
+};
+
+message DeleteRecipeResponse {};
+
+message ListRecipeRequest {
+	int32 page_size = 1;
+	string page_token = 2;
+};
+
+message ListRecipesResponse {
+	repeated nutrition.models.Recipe entities = 1;
 	string next_page_token = 2;
 };
 
