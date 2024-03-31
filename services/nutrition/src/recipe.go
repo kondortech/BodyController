@@ -41,8 +41,8 @@ func convertweightedIngredientMongoToProto(instance weightedIngredientMongo) *pb
 type recipeMongo struct {
 	Id                            primitive.ObjectID        `bson:"_id,omitempty"`
 	Name                          string                    `bson:"name"`
-	recipeSteps                   string                    `bson:"recipe_steps"`
-	exampleIngredientsProportions []weightedIngredientMongo `bson:"example_ingredients_proportions"`
+	RecipeSteps                   string                    `bson:"recipe_steps"`
+	ExampleIngredientsProportions []weightedIngredientMongo `bson:"example_ingredients_proportions"`
 }
 
 // CreateRecipe implements proto.NutritionServer.
@@ -56,8 +56,8 @@ func (svc *Service) CreateRecipe(ctx context.Context, req *pb.CreateRecipeReques
 
 	resp, err := coll.InsertOne(ctx, recipeMongo{
 		Name:                          req.GetEntity().GetName(),
-		recipeSteps:                   req.GetEntity().GetRecipeSteps(),
-		exampleIngredientsProportions: ingredients,
+		RecipeSteps:                   req.GetEntity().GetRecipeSteps(),
+		ExampleIngredientsProportions: ingredients,
 	})
 	if err != nil {
 		return nil, err
@@ -130,15 +130,15 @@ func (svc *Service) ListRecipes(ctx context.Context, req *pb.ListRecipeRequest) 
 			return nil, fmt.Errorf("cursor decode error: %v", err)
 		}
 
-		ingredients := make([]*pb.WeightedIngredient, 0, len(mongoInstance.exampleIngredientsProportions))
-		for _, item := range mongoInstance.exampleIngredientsProportions {
+		ingredients := make([]*pb.WeightedIngredient, 0, len(mongoInstance.ExampleIngredientsProportions))
+		for _, item := range mongoInstance.ExampleIngredientsProportions {
 			ingredients = append(ingredients, convertweightedIngredientMongoToProto(item))
 		}
 
 		result = append(result, &pb.Recipe{
 			Id:                            mongoInstance.Id.Hex(),
 			Name:                          mongoInstance.Name,
-			RecipeSteps:                   mongoInstance.recipeSteps,
+			RecipeSteps:                   mongoInstance.RecipeSteps,
 			ExampleIngredientsProportions: ingredients,
 		})
 	}

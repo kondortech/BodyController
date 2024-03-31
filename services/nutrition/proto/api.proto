@@ -13,6 +13,10 @@ service Nutrition {
 	rpc CreateRecipe(CreateRecipeRequest) returns (CreateRecipeResponse);
 	rpc DeleteRecipe(DeleteRecipeRequest) returns (DeleteRecipeResponse);
 	rpc ListRecipes(ListRecipeRequest) returns (ListRecipesResponse);
+
+	rpc CreateMeal(CreateMealRequest) returns (CreateMealResponse);
+	rpc DeleteMeal(DeleteMealRequest) returns (DeleteMealResponse);
+	rpc ListMeals(ListMealRequest) returns (ListMealsResponse);
 }
 
 message CreateIngredientRequest {
@@ -60,6 +64,30 @@ message ListRecipeRequest {
 
 message ListRecipesResponse {
 	repeated nutrition.models.Recipe entities = 1;
+	string next_page_token = 2;
+};
+
+message CreateMealRequest {
+	nutrition.models.Meal entity = 1;
+};
+
+message CreateMealResponse {
+	string entity_id = 1;
+};
+
+message DeleteMealRequest {
+	string entity_id = 1;
+};
+
+message DeleteMealResponse {};
+
+message ListMealRequest {
+	int32 page_size = 1;
+	string page_token = 2;
+};
+
+message ListMealsResponse {
+	repeated nutrition.models.Meal entities = 1;
 	string next_page_token = 2;
 };
 
