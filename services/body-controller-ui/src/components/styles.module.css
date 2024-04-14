@@ -1,0 +1,25 @@
+.tile {
+    display: flex;
+    flex-direction: row;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+    min-width: 400px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: darkcyan;
+}
+
+.tile_content {
+    padding: 20px;
+}
+
+.tile_title {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0 0 10px;
+}
+
+.tile_description {
+    font-size: 16px;
+    margin: 0 0 15px;
+}
