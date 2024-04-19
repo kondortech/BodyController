@@ -1,0 +1,28 @@
+.card {
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+    border-radius: 10px;
+    background-color: ghostwhite;
+    width: fit-content;
+    padding: 1ch;
+}
+
+.card_image {
+    border-color: black;
+    border-width: 2px;
+    border-radius: 10px
+}
+
+.card_info {
+    padding: 0 2ch;
+}
+
+.list_card {
+    padding-top: 2ch;
+}
+
+.title {
+    font-size: 2ch;
+    font-weight: 900;
+}
