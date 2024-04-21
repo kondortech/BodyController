@@ -11,7 +11,7 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	if err := src.Serve(ctx); err != nil {
+	if err := src.InitConsumer(ctx); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
 }

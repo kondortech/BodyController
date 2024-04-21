@@ -1,7 +1,7 @@
 syntax = "proto3";
 
-package nutrition.api;
-option go_package = "github.com/kirvader/BodyController/services/nutrition/proto";
+package gateway.api;
+option go_package = "github.com/kirvader/BodyController/services/gateway/proto";
 
 import "services/nutrition/proto/models.proto";
 

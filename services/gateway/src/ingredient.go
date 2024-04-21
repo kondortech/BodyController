@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	pb "github.com/kirvader/BodyController/services/nutrition/proto"
+	pb "github.com/kirvader/BodyController/services/gateway/proto"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
