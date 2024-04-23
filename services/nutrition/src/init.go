@@ -7,7 +7,8 @@ import (
 
 	"github.com/kirvader/BodyController/internal/db"
 	"github.com/kirvader/BodyController/pkg/utils"
-	pb "github.com/kirvader/BodyController/services/gateway/proto"
+	pb "github.com/kirvader/BodyController/services/nutrition/proto"
+
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"

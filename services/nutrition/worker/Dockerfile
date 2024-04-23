@@ -1,6 +1,6 @@
 FROM body-controller-monorepo
 
-WORKDIR /services/nutrition/
+WORKDIR /services/nutrition/worker
 
 RUN go build -mod=mod -o service ./*.go
 

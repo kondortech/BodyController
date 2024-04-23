@@ -8,10 +8,6 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-func createConsumer() {
-
-}
-
 func InitConsumer(ctx context.Context) error {
 	conn, err := amqp.Dial("amqp://guest:guest@message-broker:5672/")
 	if err != nil {
@@ -21,7 +17,7 @@ func InitConsumer(ctx context.Context) error {
 
 	inventoryChannel, err := conn.Channel()
 	if err != nil {
-		return fmt.Errorf("failed to open a channel: %s", err)
+		return fmt.Errorf("failed to open channel: %s", err)
 	}
 	defer inventoryChannel.Close()
 
@@ -38,7 +34,7 @@ func InitConsumer(ctx context.Context) error {
 		return fmt.Errorf("failed to create consumer: %s", err)
 	}
 
-	fmt.Println("inventory consumer initialized")
+	fmt.Println("worker is initialized")
 
 	for item := range inventoryConsumerChannel {
 		log.Print(item)
