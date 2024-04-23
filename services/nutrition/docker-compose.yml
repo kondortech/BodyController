@@ -61,24 +61,22 @@ services:
       nutrition-storage-mongo:
         condition: service_healthy
 
-  # nutrition-service:
-  #   image: ${SERVICE_NAME}
-  #   container_name: ${SERVICE_NAME}
-  #   environment:
-  #     - SERVICE_PORT=50001
-  #     - MONGODB_IP=nutrition-storage-mongo
-  #     - MONGODB_PORT=27017
-  #   expose:
-  #     - 50001
-  #   ports:
-  #     - 50001:50001
-  #   networks:
-  #     - nutrition-network-int
-  #   depends_on:
-  #     nutrition-message-broker-rabbitmq:
-  #       condition: service_healthy
-  #     nutrition-storage-mongo:
-  #       condition: service_healthy
+  nutrition-service:
+    image: nutrition-service
+    container_name: nutrition-service
+    environment:
+      - SERVICE_PORT=50001
+      - MONGODB_IP=nutrition-storage-mongo
+      - MONGODB_PORT=27017
+    ports:
+      - 50001:50001
+    networks:
+      - nutrition-network-int
+    depends_on:
+      nutrition-message-broker-rabbitmq:
+        condition: service_healthy
+      nutrition-storage-mongo:
+        condition: service_healthy
 
 volumes:
   nutrition-volume-mongo:
