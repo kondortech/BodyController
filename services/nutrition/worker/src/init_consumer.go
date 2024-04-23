@@ -9,7 +9,7 @@ import (
 )
 
 func InitConsumer(ctx context.Context) error {
-	conn, err := amqp.Dial("amqp://guest:guest@message-broker:5672/")
+	conn, err := amqp.Dial("amqp://guest:guest@nutrition-message-broker-rabbitmq:5672/")
 	if err != nil {
 		return fmt.Errorf("failed to connect to RabbitMQ: %s", err)
 	}
@@ -34,7 +34,7 @@ func InitConsumer(ctx context.Context) error {
 		return fmt.Errorf("failed to create consumer: %s", err)
 	}
 
-	fmt.Println("worker is initialized")
+	fmt.Println("worker is initialized and consumes ingredient messages")
 
 	for item := range inventoryConsumerChannel {
 		log.Print(item)
