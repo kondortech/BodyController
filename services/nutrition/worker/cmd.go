@@ -8,10 +8,8 @@ import (
 )
 
 func main() {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	if err := src.InitConsumer(ctx); err != nil {
-		log.Fatalf("failed to serve: %v", err)
+	if err := src.InitConsumer(context.Background()); err != nil {
+		log.Fatalf("worker crashed with error: %v", err)
 	}
+	log.Print("worker execution finished")
 }

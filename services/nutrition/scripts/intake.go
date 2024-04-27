@@ -4,9 +4,11 @@ import (
 	"context"
 	"log"
 
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
+	pbModels "github.com/kirvader/BodyController/services/nutrition/models"
 	pb "github.com/kirvader/BodyController/services/nutrition/proto"
 )
 
@@ -18,23 +20,48 @@ func main() {
 	defer conn.Close()
 	client := pb.NewNutritionClient(conn)
 
-	resp, err := client.CreateIngredient(context.Background(), &pb.CreateIngredientRequest{
-		Entity: &pb.Ingredient{
-			Name: "Cucumber",
-			MacrosForWeight: &pb.MacrosForWeight{
-				Macros: &pb.Macros{
-					Calories: 10,
-					Proteins: 0,
-					Carbs:    2,
-					Fats:     0,
+	// resp, err := client.CreateIngredient(context.Background(), &pb.CreateIngredientRequest{
+	// 	Entity: &pbModels.Ingredient{
+	// 		Name: "Cucumber",
+	// 		MacrosForWeight: &pbModels.MacrosForWeight{
+	// 			Macros: &pbModels.Macros{
+	// 				Calories: 10,
+	// 				Proteins: 0,
+	// 				Carbs:    2,
+	// 				Fats:     0,
+	// 			},
+	// 			Gramms: 100,
+	// 		},
+	// 	},
+	// })
+
+	resp, err := client.CreateRecipe(context.Background(), &pb.CreateRecipeRequest{
+		Entity: &pbModels.Recipe{
+			Name:        "Normal recipe 2",
+			RecipeSteps: "just do it",
+			ExampleIngredientsProportions: []*pbModels.WeightedIngredient{
+				{
+					Ingredient: &pbModels.Ingredient{
+						Id:   primitive.NewObjectID().Hex(),
+						Name: "Some good shit 2",
+						MacrosForWeight: &pbModels.MacrosForWeight{
+							Macros: &pbModels.Macros{
+								Calories: 10,
+								Proteins: 0,
+								Carbs:    2,
+								Fats:     0,
+							},
+							Gramms: 100,
+						},
+					},
+					Gramms: 1000,
 				},
-				Gramms: 100,
 			},
 		},
 	})
-	// resp, err := client.DeleteIntake(context.Background(), &pb.DeleteIntakeRequest{
-	// 	Id: "65edd81ff5694c28f4b0d149",
-	// })
+	_, err = client.DeleteRecipe(context.Background(), &pb.DeleteRecipeRequest{
+		EntityId: "662d4f93bd17f749e0aea14e",
+	})
 	if err != nil {
 		log.Printf("error: %v", err)
 		return

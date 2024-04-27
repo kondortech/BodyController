@@ -1,6 +1,7 @@
 services:
   nutrition-storage-mongo:
     image: mongo:latest
+    attach: false
     container_name: nutrition-storage-mongo-container
     healthcheck:
       test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
@@ -16,6 +17,7 @@ services:
 
   nutrition-storage-mongo-observer:
     image: mongo-express:latest
+    attach: false
     container_name: nutrition-storage-mongo-observer-container
     ports:
       - 8081:8081

@@ -4,7 +4,7 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
 
 package nutrition.models;
-option go_package = "github.com/kirvader/BodyController/services/nutrition/proto";
+option go_package = "github.com/kirvader/BodyController/services/nutrition/models";
 
 message Macros {
 	float calories = 1;

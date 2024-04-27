@@ -5,23 +5,31 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/kirvader/BodyController/internal/db"
 	amqp "github.com/rabbitmq/amqp091-go"
+	"golang.org/x/sync/errgroup"
 )
 
 func InitConsumer(ctx context.Context) error {
+	mongoClient, closeMongoClient, err := db.InitMongoDBClientFromENV(ctx)
+	if err != nil {
+		return err
+	}
+	defer closeMongoClient()
+
 	conn, err := amqp.Dial("amqp://guest:guest@nutrition-message-broker-rabbitmq:5672/")
 	if err != nil {
 		return fmt.Errorf("failed to connect to RabbitMQ: %s", err)
 	}
 	defer conn.Close()
 
-	inventoryChannel, err := conn.Channel()
+	ingredientMQChannel, err := conn.Channel()
 	if err != nil {
 		return fmt.Errorf("failed to open channel: %s", err)
 	}
-	defer inventoryChannel.Close()
+	defer ingredientMQChannel.Close()
 
-	inventoryConsumerChannel, err := inventoryChannel.ConsumeWithContext(
+	ingredientConsumer, err := ingredientMQChannel.ConsumeWithContext(
 		ctx,
 		"ingredient",
 		"",
@@ -31,13 +39,62 @@ func InitConsumer(ctx context.Context) error {
 		false,
 		nil)
 	if err != nil {
-		return fmt.Errorf("failed to create consumer: %s", err)
+		return fmt.Errorf("failed to create consumer for ingredient: %s", err)
 	}
-
 	fmt.Println("worker is initialized and consumes ingredient messages")
 
-	for item := range inventoryConsumerChannel {
-		log.Print(item)
+	recipeMQChannel, err := conn.Channel()
+	if err != nil {
+		return fmt.Errorf("failed to open channel: %s", err)
 	}
-	return nil
+	defer recipeMQChannel.Close()
+
+	recipeConsumer, err := recipeMQChannel.ConsumeWithContext(
+		ctx,
+		"recipe",
+		"",
+		true,
+		false,
+		false,
+		false,
+		nil)
+	if err != nil {
+		return fmt.Errorf("failed to create consumer for recipe: %s", err)
+	}
+	fmt.Println("worker is initialized and consumes recipe messages")
+
+	eg, egCtx := errgroup.WithContext(ctx)
+	eg.Go(func() error {
+		// TODO make this parallel with pool
+		for {
+			select {
+			case item := <-ingredientConsumer:
+				err := ProcessIngredientOperation(ctx, mongoClient, item)
+				if err != nil {
+					log.Printf("ingredient operation processing failed: %v", err)
+					return err
+				}
+			case <-egCtx.Done():
+				log.Print("context canceled")
+				return nil
+			}
+		}
+	})
+	eg.Go(func() error {
+		// TODO make this parallel with pool
+		for {
+			select {
+			case item := <-recipeConsumer:
+				err := ProcessRecipeOperation(ctx, mongoClient, item)
+				if err != nil {
+					log.Printf("recipe operation processing failed: %v", err)
+					return err
+				}
+			case <-egCtx.Done():
+				log.Print("context canceled")
+				return nil
+			}
+		}
+	})
+	return eg.Wait()
 }
