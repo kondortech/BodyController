@@ -76,25 +76,8 @@ func (svc *Service) DeleteRecipe(ctx context.Context, req *pb.DeleteRecipeReques
 	log.Println("published DELETE event with id: ", req.EntityId)
 
 	return &pb.DeleteRecipeResponse{}, nil
-	// coll := svc.mongoClient.Database("BodyController").Collection("Recipes")
-
-	// objectId, err := primitive.ObjectIDFromHex(req.GetEntityId())
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	// resp, err := coll.DeleteOne(ctx, bson.M{"_id": objectId})
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	// if resp.DeletedCount != 1 {
-	// 	return nil, errors.New("delete operation failed")
-	// }
-	// return &pb.DeleteRecipeResponse{}, nil
 }
 
-// ListRecipes implements proto.NutritionServer.
 func (svc *Service) ListRecipes(ctx context.Context, req *pb.ListRecipeRequest) (*pb.ListRecipesResponse, error) {
 	var pageSize, pageOffset int32
 	if req.GetPageToken() == "" {

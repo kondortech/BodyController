@@ -13,25 +13,25 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-func ProcessIngredientOperation(ctx context.Context, mongoClient *mongo.Client, item amqp.Delivery) error {
+func ProcessMealOperation(ctx context.Context, mongoClient *mongo.Client, item amqp.Delivery) error {
 	switch item.Type {
 	case "CREATE":
-		return CreateIngredient(ctx, mongoClient, item.Body)
+		return CreateMeal(ctx, mongoClient, item.Body)
 	case "DELETE":
-		return DeleteIngredient(ctx, mongoClient, item.Body)
+		return DeleteMeal(ctx, mongoClient, item.Body)
 	}
 	return nil
 }
 
-func CreateIngredient(ctx context.Context, mongoClient *mongo.Client, protoBytes []byte) error {
-	coll := mongoClient.Database("BodyController").Collection("Ingredients")
-
-	var createRequest pb.CreateIngredientRequest
+func CreateMeal(ctx context.Context, mongoClient *mongo.Client, protoBytes []byte) error {
+	var createRequest pb.CreateMealRequest
 	err := protojson.Unmarshal(protoBytes, &createRequest)
 	if err != nil {
 		return err
 	}
 	log.Printf("got create request: %s", protojson.Format(&createRequest))
+
+	coll := mongoClient.Database("BodyController").Collection("Meals")
 
 	mongoInstance, err := createRequest.GetEntity().Mongo()
 	if err != nil {
@@ -42,10 +42,10 @@ func CreateIngredient(ctx context.Context, mongoClient *mongo.Client, protoBytes
 	return err
 }
 
-func DeleteIngredient(ctx context.Context, mongoClient *mongo.Client, protoBytes []byte) error {
-	coll := mongoClient.Database("BodyController").Collection("Ingredients")
+func DeleteMeal(ctx context.Context, mongoClient *mongo.Client, protoBytes []byte) error {
+	coll := mongoClient.Database("BodyController").Collection("Meals")
 
-	var deleteRequest pb.DeleteIngredientRequest
+	var deleteRequest pb.DeleteMealRequest
 	err := protojson.Unmarshal(protoBytes, &deleteRequest)
 	if err != nil {
 		return err

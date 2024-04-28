@@ -63,6 +63,26 @@ func InitConsumer(ctx context.Context) error {
 	}
 	fmt.Println("worker is initialized and consumes recipe messages")
 
+	mealMQChannel, err := conn.Channel()
+	if err != nil {
+		return fmt.Errorf("failed to open channel: %s", err)
+	}
+	defer mealMQChannel.Close()
+
+	mealConsumer, err := mealMQChannel.ConsumeWithContext(
+		ctx,
+		"meal",
+		"",
+		true,
+		false,
+		false,
+		false,
+		nil)
+	if err != nil {
+		return fmt.Errorf("failed to create consumer for meal: %s", err)
+	}
+	fmt.Println("worker is initialized and consumes meal messages")
+
 	eg, egCtx := errgroup.WithContext(ctx)
 	eg.Go(func() error {
 		// TODO make this parallel with pool
@@ -88,6 +108,22 @@ func InitConsumer(ctx context.Context) error {
 				err := ProcessRecipeOperation(ctx, mongoClient, item)
 				if err != nil {
 					log.Printf("recipe operation processing failed: %v", err)
+					return err
+				}
+			case <-egCtx.Done():
+				log.Print("context canceled")
+				return nil
+			}
+		}
+	})
+	eg.Go(func() error {
+		// TODO make this parallel with pool
+		for {
+			select {
+			case item := <-mealConsumer:
+				err := ProcessMealOperation(ctx, mongoClient, item)
+				if err != nil {
+					log.Printf("meal operation processing failed: %v", err)
 					return err
 				}
 			case <-egCtx.Done():

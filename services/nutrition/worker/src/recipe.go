@@ -63,7 +63,7 @@ func DeleteRecipe(ctx context.Context, mongoClient *mongo.Client, protoBytes []b
 
 	_, err = coll.DeleteOne(ctx, bson.M{"_id": objectId})
 	if err != nil {
-		return fmt.Errorf("delete from mongo failed: ", err)
+		return fmt.Errorf("delete from mongo failed: %v", err)
 	}
 	return nil
 }
