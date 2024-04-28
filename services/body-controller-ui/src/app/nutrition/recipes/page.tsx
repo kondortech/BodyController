@@ -1,10 +1,10 @@
 import React from "react";
-import { Ingredient, IngredientCard } from "./ingredient_card";
+import { Recipe, RecipeCard } from "./recipe_card";
 import styles from './styles.module.css'
 
 
 export default function Page() {
-  const ingredients: Ingredient[] = [
+  const ingredients: Recipe[] = [
     {
 
       title: "Ham",
@@ -51,9 +51,9 @@ export default function Page() {
     <main>
       <p className={styles.page_title}>Available Ingredients</p>
       <div className={styles.grid_container}>
-        {ingredients.map((value: Ingredient) => {
+        {ingredients.map((value: Recipe) => {
           return (
-            <IngredientCard ingredient={value} />
+            <RecipeCard ingredient={value} />
           )
         })}
       </div>

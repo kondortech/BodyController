@@ -12,17 +12,17 @@ export type Macros = {
     fats: number;
 };
 
-export type Ingredient = {
+export type Recipe = {
     title: string;
     macros: Macros;
 };
 
 type Props = {
-    ingredient: Ingredient;
+    ingredient: Recipe;
 
 };
 
-export const IngredientCard = (props: Props): JSX.Element => {
+export const RecipeCard = (props: Props): JSX.Element => {
     return (
         <div className={styles.card}>
             <Image

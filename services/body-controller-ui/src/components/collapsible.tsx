@@ -9,7 +9,7 @@ type props = {
 };
 
 export const Collapsible = (props: props) => {
-    const [open, setOpen] = useState(false);
+    const [open, setOpen] = useState(true);
 
     const onToggle = () => {
         setOpen((prev) => !prev);
