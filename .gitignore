@@ -22,5 +22,8 @@ go.work
 
 # protobuf generated files
 *.pb.go
+*.pb.gw.go
+*.swagger.json
+*default-ui/src/generated/*
 
 */node_modules

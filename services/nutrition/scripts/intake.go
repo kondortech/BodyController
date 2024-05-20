@@ -10,7 +10,6 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 
-	pbModels "github.com/kirvader/BodyController/services/nutrition/models"
 	pb "github.com/kirvader/BodyController/services/nutrition/proto"
 )
 
@@ -66,18 +65,18 @@ func main() {
 	// })
 
 	resp, err := client.CreateMeal(context.Background(), &pb.CreateMealRequest{
-		Entity: &pbModels.Meal{
+		Entity: &pb.Meal{
 			Username: "Kirill",
 			RecipeId: &wrapperspb.StringValue{
 				Value: "662d4fffbd17f749e0aea14f",
 			},
-			WeightedIngredients: []*pbModels.WeightedIngredient{
+			WeightedIngredients: []*pb.WeightedIngredient{
 				{
-					Ingredient: &pbModels.Ingredient{
+					Ingredient: &pb.Ingredient{
 						Id:   primitive.NewObjectID().Hex(),
 						Name: "Some good shit 2",
-						MacrosForWeight: &pbModels.MacrosForWeight{
-							Macros: &pbModels.Macros{
+						MacrosForWeight: &pb.MacrosForWeight{
+							Macros: &pb.Macros{
 								Calories: 10,
 								Proteins: 0,
 								Carbs:    2,
@@ -90,7 +89,7 @@ func main() {
 				},
 			},
 			Timestamp:  timestamppb.Now(),
-			MealStatus: pbModels.MealStatus_Consumed,
+			MealStatus: pb.MealStatus_Consumed,
 		},
 	})
 	if err != nil {

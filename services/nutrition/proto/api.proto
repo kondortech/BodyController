@@ -3,20 +3,62 @@ syntax = "proto3";
 package nutrition.api;
 option go_package = "github.com/kirvader/BodyController/services/nutrition/proto";
 
-import "services/nutrition/models/models.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/wrappers.proto";
+
+import "services/nutrition/proto/models.proto";
 
 service Nutrition {
-	rpc CreateIngredient(CreateIngredientRequest) returns (CreateIngredientResponse);
-	rpc DeleteIngredient(DeleteIngredientRequest) returns (DeleteIngredientResponse);
-	rpc ListIngredients(ListIngredientRequest) returns (ListIngredientsResponse);
+	rpc CreateIngredient(CreateIngredientRequest) returns (CreateIngredientResponse) {
+        option (google.api.http) = {
+            post: "/nutrition/ingredients"
+            body: "*"
+        };
+    };
+	rpc DeleteIngredient(DeleteIngredientRequest) returns (DeleteIngredientResponse) {
+        option (google.api.http) = {
+            delete: "/nutrition/ingredients/{entity_id}"
+        };
+	};
+	rpc ListIngredients(ListIngredientsRequest) returns (ListIngredientsResponse) {
+        option (google.api.http) = {
+            get: "/nutrition/ingredients"
+        };
+	};
 
-	rpc CreateRecipe(CreateRecipeRequest) returns (CreateRecipeResponse);
-	rpc DeleteRecipe(DeleteRecipeRequest) returns (DeleteRecipeResponse);
-	rpc ListRecipes(ListRecipeRequest) returns (ListRecipesResponse);
+	rpc CreateRecipe(CreateRecipeRequest) returns (CreateRecipeResponse) {
+        option (google.api.http) = {
+            post: "/nutrition/recipes"
+            body: "*"
+        };
+    };
+	rpc DeleteRecipe(DeleteRecipeRequest) returns (DeleteRecipeResponse) {
+        option (google.api.http) = {
+            delete: "/nutrition/recipes/{entity_id}"
+        };
+	};
+	rpc ListRecipes(ListRecipesRequest) returns (ListRecipesResponse) {
+        option (google.api.http) = {
+            get: "/nutrition/recipes"
+        };
+	};
 
-	rpc CreateMeal(CreateMealRequest) returns (CreateMealResponse);
-	rpc DeleteMeal(DeleteMealRequest) returns (DeleteMealResponse);
-	rpc ListMeals(ListMealRequest) returns (ListMealsResponse);
+	rpc CreateMeal(CreateMealRequest) returns (CreateMealResponse) {
+        option (google.api.http) = {
+            post: "/nutrition/meals"
+            body: "*"
+        };
+    };
+	rpc DeleteMeal(DeleteMealRequest) returns (DeleteMealResponse) {
+        option (google.api.http) = {
+            delete: "/nutrition/meals/{entity_id}"
+        };
+	};
+	rpc ListMeals(ListMealsRequest) returns (ListMealsResponse) {
+        option (google.api.http) = {
+            get: "/nutrition/meals"
+        };
+	};
 }
 
 message CreateIngredientRequest {
@@ -33,14 +75,14 @@ message DeleteIngredientRequest {
 
 message DeleteIngredientResponse {};
 
-message ListIngredientRequest {
+message ListIngredientsRequest {
 	int32 page_size = 1;
-	string page_token = 2;
+	google.protobuf.StringValue page_token = 2;
 };
 
 message ListIngredientsResponse {
 	repeated nutrition.models.Ingredient entities = 1;
-	string next_page_token = 2;
+	google.protobuf.StringValue next_page_token = 2;
 };
 
 message CreateRecipeRequest {
@@ -57,14 +99,14 @@ message DeleteRecipeRequest {
 
 message DeleteRecipeResponse {};
 
-message ListRecipeRequest {
+message ListRecipesRequest {
 	int32 page_size = 1;
-	string page_token = 2;
+	google.protobuf.StringValue page_token = 2;
 };
 
 message ListRecipesResponse {
 	repeated nutrition.models.Recipe entities = 1;
-	string next_page_token = 2;
+	google.protobuf.StringValue next_page_token = 2;
 };
 
 message CreateMealRequest {
@@ -81,13 +123,13 @@ message DeleteMealRequest {
 
 message DeleteMealResponse {};
 
-message ListMealRequest {
+message ListMealsRequest {
 	int32 page_size = 1;
-	string page_token = 2;
+	google.protobuf.StringValue page_token = 2;
 };
 
 message ListMealsResponse {
 	repeated nutrition.models.Meal entities = 1;
-	string next_page_token = 2;
+	google.protobuf.StringValue next_page_token = 2;
 };
 
