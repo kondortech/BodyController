@@ -39,46 +39,14 @@ func (instance *MacrosMongo) Proto() (*Macros, error) {
 	}, nil
 }
 
-type MacrosForWeightMongo struct {
-	Macros *MacrosMongo `bson:"macros"`
-	Gramms float32      `bson:"gramms"`
-}
-
-func (instance *MacrosForWeight) Mongo() (*MacrosForWeightMongo, error) {
-	macros, err := instance.GetMacros().Mongo()
-	if err != nil {
-		return nil, err
-	}
-
-	return &MacrosForWeightMongo{
-		Macros: macros,
-		Gramms: instance.GetGramms(),
-	}, nil
-}
-
-func (instance *MacrosForWeightMongo) Proto() (*MacrosForWeight, error) {
-	if instance == nil {
-		return nil, ErrNilInstance
-	}
-	macros, err := instance.Macros.Proto()
-	if err != nil {
-		return nil, err
-	}
-
-	return &MacrosForWeight{
-		Macros: macros,
-		Gramms: instance.Gramms,
-	}, nil
-}
-
 type IngredientMongo struct {
-	Id              primitive.ObjectID    `bson:"_id,omitempty"`
-	Name            string                `bson:"name"`
-	MacrosForWeight *MacrosForWeightMongo `bson:"macros_for_weight"`
+	Id               primitive.ObjectID `bson:"_id,omitempty"`
+	Title            string             `bson:"title"`
+	MacrosNormalized *MacrosMongo       `bson:"macros_normalized"`
 }
 
 func (instance *Ingredient) Mongo() (*IngredientMongo, error) {
-	macrosForWeight, err := instance.GetMacrosForWeight().Mongo()
+	macrosNormalized, err := instance.GetMacrosNormalized().Mongo()
 	if err != nil {
 		return nil, err
 	}
@@ -89,9 +57,9 @@ func (instance *Ingredient) Mongo() (*IngredientMongo, error) {
 	}
 
 	return &IngredientMongo{
-		Id:              id,
-		Name:            instance.GetName(),
-		MacrosForWeight: macrosForWeight,
+		Id:               id,
+		Title:            instance.GetTitle(),
+		MacrosNormalized: macrosNormalized,
 	}, nil
 }
 
@@ -100,15 +68,15 @@ func (instance *IngredientMongo) Proto() (*Ingredient, error) {
 		return nil, ErrNilInstance
 	}
 
-	macrosForWeight, err := instance.MacrosForWeight.Proto()
+	macrosForWeight, err := instance.MacrosNormalized.Proto()
 	if err != nil {
 		return nil, err
 	}
 
 	return &Ingredient{
-		Id:              instance.Id.Hex(),
-		Name:            instance.Name,
-		MacrosForWeight: macrosForWeight,
+		Id:               instance.Id.Hex(),
+		Title:            instance.Title,
+		MacrosNormalized: macrosForWeight,
 	}, nil
 }
 
@@ -147,8 +115,9 @@ func (instance *WeightedIngredientMongo) Proto() (*WeightedIngredient, error) {
 
 type RecipeMongo struct {
 	Id                            primitive.ObjectID         `bson:"_id,omitempty"`
-	Name                          string                     `bson:"name"`
-	RecipeSteps                   string                     `bson:"recipe_steps"`
+	Title                         string                     `bson:"title"`
+	RecipeDescription             string                     `bson:"recipe_description"`
+	BaseIngredients               []*IngredientMongo         `bson:"base_ingredients"`
 	ExampleIngredientsProportions []*WeightedIngredientMongo `bson:"example_ingredients_proportions"`
 }
 
@@ -158,20 +127,30 @@ func (instance *Recipe) Mongo() (*RecipeMongo, error) {
 		return nil, ErrInvalidId
 	}
 
-	ingredients := make([]*WeightedIngredientMongo, 0, len(instance.GetExampleIngredientsProportions()))
+	ingredients := make([]*IngredientMongo, 0, len(instance.GetBaseIngredients()))
+	for _, ingredient := range instance.GetBaseIngredients() {
+		ingredientMongo, err := ingredient.Mongo()
+		if err != nil {
+			return nil, err
+		}
+		ingredients = append(ingredients, ingredientMongo)
+	}
+
+	ingredientsProportions := make([]*WeightedIngredientMongo, 0, len(instance.GetExampleIngredientsProportions()))
 	for _, weightedIngredient := range instance.GetExampleIngredientsProportions() {
 		weightedIngredientMongo, err := weightedIngredient.Mongo()
 		if err != nil {
 			return nil, err
 		}
-		ingredients = append(ingredients, weightedIngredientMongo)
+		ingredientsProportions = append(ingredientsProportions, weightedIngredientMongo)
 	}
 
 	return &RecipeMongo{
 		Id:                            id,
-		Name:                          instance.GetName(),
-		RecipeSteps:                   instance.GetRecipeSteps(),
-		ExampleIngredientsProportions: ingredients,
+		Title:                         instance.GetTitle(),
+		RecipeDescription:             instance.GetRecipeDescription(),
+		BaseIngredients:               ingredients,
+		ExampleIngredientsProportions: ingredientsProportions,
 	}, nil
 }
 
@@ -180,20 +159,30 @@ func (instance *RecipeMongo) Proto() (*Recipe, error) {
 		return nil, ErrNilInstance
 	}
 
-	ingredients := make([]*WeightedIngredient, 0, len(instance.ExampleIngredientsProportions))
+	ingredients := make([]*Ingredient, 0, len(instance.BaseIngredients))
+	for _, ingredientMongo := range instance.BaseIngredients {
+		ingredient, err := ingredientMongo.Proto()
+		if err != nil {
+			return nil, err
+		}
+		ingredients = append(ingredients, ingredient)
+	}
+
+	ingredientsProportions := make([]*WeightedIngredient, 0, len(instance.ExampleIngredientsProportions))
 	for _, weightedIngredientMongo := range instance.ExampleIngredientsProportions {
 		weightedIngredient, err := weightedIngredientMongo.Proto()
 		if err != nil {
 			return nil, err
 		}
-		ingredients = append(ingredients, weightedIngredient)
+		ingredientsProportions = append(ingredientsProportions, weightedIngredient)
 	}
 
 	return &Recipe{
 		Id:                            instance.Id.Hex(),
-		Name:                          instance.Name,
-		RecipeSteps:                   instance.RecipeSteps,
-		ExampleIngredientsProportions: ingredients,
+		Title:                         instance.Title,
+		RecipeDescription:             instance.RecipeDescription,
+		BaseIngredients:               ingredients,
+		ExampleIngredientsProportions: ingredientsProportions,
 	}, nil
 }
 

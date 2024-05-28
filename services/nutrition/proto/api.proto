@@ -4,6 +4,7 @@ package nutrition.api;
 option go_package = "github.com/kirvader/BodyController/services/nutrition/proto";
 
 import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
 import "google/protobuf/wrappers.proto";
 
 import "services/nutrition/proto/models.proto";
@@ -62,15 +63,15 @@ service Nutrition {
 }
 
 message CreateIngredientRequest {
-	nutrition.models.Ingredient entity = 1;
+	nutrition.models.Ingredient entity = 1 [(google.api.field_behavior) = REQUIRED];
 };
 
 message CreateIngredientResponse {
-	string entity_id = 1;
+	string entity_id = 1 [(google.api.field_behavior) = REQUIRED];
 };
 
 message DeleteIngredientRequest {
-	string entity_id = 1;
+	string entity_id = 1 [(google.api.field_behavior) = REQUIRED];
 };
 
 message DeleteIngredientResponse {};
@@ -81,20 +82,20 @@ message ListIngredientsRequest {
 };
 
 message ListIngredientsResponse {
-	repeated nutrition.models.Ingredient entities = 1;
+	repeated nutrition.models.Ingredient entities = 1 [(google.api.field_behavior) = REQUIRED];
 	google.protobuf.StringValue next_page_token = 2;
 };
 
 message CreateRecipeRequest {
-	nutrition.models.Recipe entity = 1;
+	nutrition.models.Recipe entity = 1 [(google.api.field_behavior) = REQUIRED];
 };
 
 message CreateRecipeResponse {
-	string entity_id = 1;
+	string entity_id = 1 [(google.api.field_behavior) = REQUIRED];
 };
 
 message DeleteRecipeRequest {
-	string entity_id = 1;
+	string entity_id = 1 [(google.api.field_behavior) = REQUIRED];
 };
 
 message DeleteRecipeResponse {};
@@ -105,20 +106,20 @@ message ListRecipesRequest {
 };
 
 message ListRecipesResponse {
-	repeated nutrition.models.Recipe entities = 1;
+	repeated nutrition.models.Recipe entities = 1 [(google.api.field_behavior) = REQUIRED];
 	google.protobuf.StringValue next_page_token = 2;
 };
 
 message CreateMealRequest {
-	nutrition.models.Meal entity = 1;
+	nutrition.models.Meal entity = 1 [(google.api.field_behavior) = REQUIRED];
 };
 
 message CreateMealResponse {
-	string entity_id = 1;
+	string entity_id = 1 [(google.api.field_behavior) = REQUIRED];
 };
 
 message DeleteMealRequest {
-	string entity_id = 1;
+	string entity_id = 1 [(google.api.field_behavior) = REQUIRED];
 };
 
 message DeleteMealResponse {};
@@ -129,7 +130,7 @@ message ListMealsRequest {
 };
 
 message ListMealsResponse {
-	repeated nutrition.models.Meal entities = 1;
+	repeated nutrition.models.Meal entities = 1 [(google.api.field_behavior) = REQUIRED];
 	google.protobuf.StringValue next_page_token = 2;
 };
 

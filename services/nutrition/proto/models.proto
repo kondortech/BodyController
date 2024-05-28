@@ -1,5 +1,6 @@
 syntax = "proto3";
 
+import "google/api/field_behavior.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
 
@@ -7,33 +8,29 @@ package nutrition.models;
 option go_package = "github.com/kirvader/BodyController/services/nutrition/proto";
 
 message Macros {
-	float calories = 1;
-	float proteins = 2;
-	float carbs = 3;
-	float fats = 4;
-};
-
-message MacrosForWeight {
-    Macros macros = 1;
-    float gramms = 2; // By default it is gonna be set to 100 gramms
+	float calories = 1 [(google.api.field_behavior) = REQUIRED];
+	float proteins = 2 [(google.api.field_behavior) = REQUIRED];
+	float carbs = 3 [(google.api.field_behavior) = REQUIRED];
+	float fats = 4 [(google.api.field_behavior) = REQUIRED];
 };
 
 message Ingredient {
     string id = 1;
-    string name = 2;
-    MacrosForWeight macros_for_weight = 3;
+    string title = 2 [(google.api.field_behavior) = REQUIRED];
+    Macros macros_normalized = 4 [(google.api.field_behavior) = REQUIRED];
 };
 
 message WeightedIngredient {
-    Ingredient ingredient = 1;
-    float gramms = 2;
+    Ingredient ingredient = 1 [(google.api.field_behavior) = REQUIRED];
+    float gramms = 2 [(google.api.field_behavior) = REQUIRED];
 };
 
 message Recipe {
     string id = 1;
-    string name = 2;
-    string recipe_steps = 3; // TODO recipe should be written in a way that doesn't depend on ingredient quantities
-    repeated WeightedIngredient example_ingredients_proportions = 4;
+    string title = 2 [(google.api.field_behavior) = REQUIRED];
+    string recipe_description = 3 [(google.api.field_behavior) = REQUIRED];
+    repeated Ingredient base_ingredients = 4 [(google.api.field_behavior) = REQUIRED];
+    repeated WeightedIngredient example_ingredients_proportions = 5;
 };
 
 enum MealStatus {
@@ -44,9 +41,9 @@ enum MealStatus {
 
 message Meal {
     string id = 1;
-    string username = 2;
-    google.protobuf.StringValue recipe_id = 3;
-    repeated WeightedIngredient weighted_ingredients = 4;
-    google.protobuf.Timestamp timestamp = 5;
-    MealStatus meal_status = 6;
-}
+    string username = 2 [(google.api.field_behavior) = REQUIRED];
+    google.protobuf.StringValue recipe_id = 3 [(google.api.field_behavior) = REQUIRED];
+    repeated WeightedIngredient weighted_ingredients = 4 [(google.api.field_behavior) = REQUIRED];
+    google.protobuf.Timestamp timestamp = 5 [(google.api.field_behavior) = REQUIRED];
+    MealStatus meal_status = 6 [(google.api.field_behavior) = REQUIRED];
+};

@@ -4,21 +4,10 @@ import React from 'react';
 import styles from './styles.module.css'
 
 import Image from 'next/image'
-
-export type Macros = {
-    calories: number;
-    proteins: number;
-    carbs: number;
-    fats: number;
-};
-
-export type Ingredient = {
-    title: string;
-    macros: Macros;
-};
+import { ModelsIngredient } from '@/generated/services/nutrition/api';
 
 type Props = {
-    ingredient: Ingredient;
+    ingredient: ModelsIngredient;
 
 };
 
@@ -34,10 +23,10 @@ export const IngredientCard = (props: Props): JSX.Element => {
             />
             <div>
                 <p className={styles.card_title}>{props.ingredient.title}</p>
-                <p>Calories: {props.ingredient.macros.calories}</p>
-                <p>Proteins: {props.ingredient.macros.proteins}</p>
-                <p>Carbs: {props.ingredient.macros.carbs}</p>
-                <p>Fats: {props.ingredient.macros.fats}</p>
+                <p>Calories: {props.ingredient.macrosNormalized.calories}</p>
+                <p>Proteins: {props.ingredient.macrosNormalized.proteins}</p>
+                <p>Carbs: {props.ingredient.macrosNormalized.carbs}</p>
+                <p>Fats: {props.ingredient.macrosNormalized.fats}</p>
             </div>
         </div >
     );
