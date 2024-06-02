@@ -2,6 +2,7 @@
 
 import '@/app/globals.css';
 import { useState, ChangeEvent, FormEvent } from 'react';
+import { createIngredient } from './post';
 
 interface FormData {
     title: string;
@@ -31,6 +32,15 @@ const IngredientForm: React.FC = () => {
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
         console.log('Form data:', formData);
+        createIngredient({
+            title: formData.title,
+            macrosNormalized: {
+                calories: Number(formData.calories),
+                proteins: Number(formData.proteins),
+                carbs: Number(formData.carbs),
+                fats: Number(formData.fats),
+            }
+        })
     };
 
     return (

@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { IngredientCard } from "./ingredient_card";
 import styles from './styles.module.css';
 import { ApiListIngredientsResponse, ModelsIngredient } from "@/generated/services/nutrition/api";
@@ -8,51 +8,14 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 
 export default function Page() {
-	// useEffect(() => {
-	// 	fetchIngredients().then((resp: ApiListIngredientsResponse) => {
-	// 		console.log(resp);
-	// 	});
-	// }, []);
+	const [ingredientsState, updateIngredients] = useState<ModelsIngredient[]>();
 
-	const ingredients: ModelsIngredient[] = [
-		{
-			title: "Ham",
-			macrosNormalized: {
-				calories: 100,
-				proteins: 22,
-				carbs: 5,
-				fats: 3,
-			},
-		},
-		// {
-		// 	title: "White bread",
-		// 	macrosNormalized: {
-		// 		calories: 360,
-		// 		proteins: 5.5,
-		// 		carbs: 62.4,
-		// 		fats: 6.9,
-		// 	},
-		// },
-		// {
-		// 	title: "White bread",
-		// 	macrosNormalized: {
-		// 		calories: 360,
-		// 		proteins: 5.5,
-		// 		carbs: 62.4,
-		// 		fats: 6.9,
-		// 	},
-		// },
-		// {
-		// 	title: "White bread",
-		// 	macrosNormalized: {
-		// 		calories: 360,
-		// 		proteins: 5.5,
-		// 		carbs: 62.4,
-		// 		fats: 6.9,
-		// 	},
-		// },
-	];
-
+	useEffect(() => {
+		fetchIngredients().then((resp: ApiListIngredientsResponse) => {
+			console.log(resp);
+			updateIngredients(resp.entities);
+		});
+	}, []);
 	const router = useRouter();
 
 	return (
@@ -63,7 +26,7 @@ export default function Page() {
 			</Button>
 			<p className={styles.page_title}>Available Ingredients</p>
 			<div className={styles.grid_container}>
-				{ingredients.map((value: ModelsIngredient) => {
+				{ingredientsState?.map((value: ModelsIngredient) => {
 					return (
 						<IngredientCard ingredient={value} />
 					)
