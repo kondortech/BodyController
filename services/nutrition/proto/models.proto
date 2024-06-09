@@ -15,7 +15,7 @@ message Macros {
 };
 
 message Ingredient {
-    string id = 1;
+    string id = 1 [(google.api.field_behavior) = REQUIRED];
     string title = 2 [(google.api.field_behavior) = REQUIRED];
     Macros macros_normalized = 4 [(google.api.field_behavior) = REQUIRED];
 };
@@ -26,7 +26,7 @@ message WeightedIngredient {
 };
 
 message Recipe {
-    string id = 1;
+    string id = 1 [(google.api.field_behavior) = REQUIRED];
     string title = 2 [(google.api.field_behavior) = REQUIRED];
     string recipe_description = 3 [(google.api.field_behavior) = REQUIRED];
     repeated Ingredient base_ingredients = 4 [(google.api.field_behavior) = REQUIRED];
@@ -40,7 +40,7 @@ enum MealStatus {
 }
 
 message Meal {
-    string id = 1;
+    string id = 1 [(google.api.field_behavior) = REQUIRED];
     string username = 2 [(google.api.field_behavior) = REQUIRED];
     google.protobuf.StringValue recipe_id = 3 [(google.api.field_behavior) = REQUIRED];
     repeated WeightedIngredient weighted_ingredients = 4 [(google.api.field_behavior) = REQUIRED];

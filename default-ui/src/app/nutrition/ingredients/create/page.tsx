@@ -1,6 +1,9 @@
 "use client";
 
+import { ModelsIngredient } from "@/generated/services/nutrition/api";
 import IngredientForm from "./ingredient_form";
+
+const onSubmit = (_: ModelsIngredient) => { }
 
 const CreateIngredientPage = () => {
     return (

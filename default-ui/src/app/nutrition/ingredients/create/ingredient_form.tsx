@@ -1,8 +1,11 @@
-'use client';
+"use client";
 
 import '@/app/globals.css';
-import { useState, ChangeEvent, FormEvent } from 'react';
-import { createIngredient } from './post';
+import { ModelsIngredient } from '@/generated/services/nutrition/api';
+import { createIngredient } from '@/services/nutrition/ingredients_api';
+import { generateObjectId } from '@/utils/bson_handling';
+import { ChangeEvent, FormEvent, useState } from 'react';
+
 
 interface FormData {
     title: string;
@@ -12,7 +15,11 @@ interface FormData {
     fats: string;
 }
 
-const IngredientForm: React.FC = () => {
+export interface Props {
+    onClick?: (ingredient: ModelsIngredient) => void;
+}
+
+const IngredientForm: React.FC<Props> = ({ onClick }) => {
     const [formData, setFormData] = useState<FormData>({
         title: '',
         calories: '',
@@ -33,6 +40,7 @@ const IngredientForm: React.FC = () => {
         e.preventDefault();
         console.log('Form data:', formData);
         createIngredient({
+            id: generateObjectId(),
             title: formData.title,
             macrosNormalized: {
                 calories: Number(formData.calories),

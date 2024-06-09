@@ -9,7 +9,6 @@ import (
 
 	amqp "github.com/rabbitmq/amqp091-go"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/wrapperspb"
@@ -18,10 +17,9 @@ import (
 )
 
 func (svc *Service) CreateMeal(ctx context.Context, req *pb.CreateMealRequest) (*pb.CreateMealResponse, error) {
-	if req == nil || req.Entity == nil { // TODO add real validation
+	if req == nil || req.GetEntity() == nil || req.GetEntity().GetId() == "" { // TODO add real validation
 		return nil, errors.New("nil instance")
 	}
-	req.Entity.Id = primitive.NewObjectID().Hex()
 
 	body, err := protojson.Marshal(req)
 	if err != nil {
@@ -42,10 +40,10 @@ func (svc *Service) CreateMeal(ctx context.Context, req *pb.CreateMealRequest) (
 	if err != nil {
 		return nil, fmt.Errorf("failed to publish event: %s", err)
 	}
-	log.Println("published CREATE event with id: ", req.Entity.Id)
+	log.Println("published CREATE event with id: ", req.GetEntity().GetId())
 
 	return &pb.CreateMealResponse{
-		EntityId: req.Entity.Id,
+		EntityId: req.GetEntity().GetId(),
 	}, nil
 
 	// coll := svc.mongoClient.Database("BodyController").Collection("Meals")
