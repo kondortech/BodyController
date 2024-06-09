@@ -30,7 +30,6 @@ message Recipe {
     string title = 2 [(google.api.field_behavior) = REQUIRED];
     string recipe_description = 3 [(google.api.field_behavior) = REQUIRED];
     repeated Ingredient base_ingredients = 4 [(google.api.field_behavior) = REQUIRED];
-    repeated WeightedIngredient example_ingredients_proportions = 5;
 };
 
 enum MealStatus {

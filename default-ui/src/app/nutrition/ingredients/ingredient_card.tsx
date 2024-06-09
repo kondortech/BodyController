@@ -3,6 +3,7 @@
 import React from 'react';
 
 import { ModelsIngredient } from '@/generated/services/nutrition/api';
+import { deleteIngredient } from '@/services/nutrition/ingredients_api';
 
 const defaultImagePath = "/ingredient-default.jpg";
 
@@ -27,6 +28,11 @@ const IngredientCard: React.FC<IngredientCardProps> = ({ ingredient, onClick }) 
             <p>Proteins: {ingredient.macrosNormalized.proteins}</p>
             <p>Carbs: {ingredient.macrosNormalized.carbs}</p>
             <p>Fat: {ingredient.macrosNormalized.fats}</p>
+            <div onClick={() => {
+                deleteIngredient(ingredient.id);
+            }} className="w-full h-12 object-cover rounded-md mb-4 bg-red-600">
+                delete
+            </div>
         </div>
     );
 };

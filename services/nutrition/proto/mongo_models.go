@@ -114,11 +114,10 @@ func (instance *WeightedIngredientMongo) Proto() (*WeightedIngredient, error) {
 }
 
 type RecipeMongo struct {
-	Id                            primitive.ObjectID         `bson:"_id,omitempty"`
-	Title                         string                     `bson:"title"`
-	RecipeDescription             string                     `bson:"recipe_description"`
-	BaseIngredients               []*IngredientMongo         `bson:"base_ingredients"`
-	ExampleIngredientsProportions []*WeightedIngredientMongo `bson:"example_ingredients_proportions"`
+	Id                primitive.ObjectID `bson:"_id,omitempty"`
+	Title             string             `bson:"title"`
+	RecipeDescription string             `bson:"recipe_description"`
+	BaseIngredients   []*IngredientMongo `bson:"base_ingredients"`
 }
 
 func (instance *Recipe) Mongo() (*RecipeMongo, error) {
@@ -136,21 +135,11 @@ func (instance *Recipe) Mongo() (*RecipeMongo, error) {
 		ingredients = append(ingredients, ingredientMongo)
 	}
 
-	ingredientsProportions := make([]*WeightedIngredientMongo, 0, len(instance.GetExampleIngredientsProportions()))
-	for _, weightedIngredient := range instance.GetExampleIngredientsProportions() {
-		weightedIngredientMongo, err := weightedIngredient.Mongo()
-		if err != nil {
-			return nil, err
-		}
-		ingredientsProportions = append(ingredientsProportions, weightedIngredientMongo)
-	}
-
 	return &RecipeMongo{
-		Id:                            id,
-		Title:                         instance.GetTitle(),
-		RecipeDescription:             instance.GetRecipeDescription(),
-		BaseIngredients:               ingredients,
-		ExampleIngredientsProportions: ingredientsProportions,
+		Id:                id,
+		Title:             instance.GetTitle(),
+		RecipeDescription: instance.GetRecipeDescription(),
+		BaseIngredients:   ingredients,
 	}, nil
 }
 
@@ -168,21 +157,11 @@ func (instance *RecipeMongo) Proto() (*Recipe, error) {
 		ingredients = append(ingredients, ingredient)
 	}
 
-	ingredientsProportions := make([]*WeightedIngredient, 0, len(instance.ExampleIngredientsProportions))
-	for _, weightedIngredientMongo := range instance.ExampleIngredientsProportions {
-		weightedIngredient, err := weightedIngredientMongo.Proto()
-		if err != nil {
-			return nil, err
-		}
-		ingredientsProportions = append(ingredientsProportions, weightedIngredient)
-	}
-
 	return &Recipe{
-		Id:                            instance.Id.Hex(),
-		Title:                         instance.Title,
-		RecipeDescription:             instance.RecipeDescription,
-		BaseIngredients:               ingredients,
-		ExampleIngredientsProportions: ingredientsProportions,
+		Id:                instance.Id.Hex(),
+		Title:             instance.Title,
+		RecipeDescription: instance.RecipeDescription,
+		BaseIngredients:   ingredients,
 	}, nil
 }
 

@@ -16,7 +16,7 @@ interface FormData {
 }
 
 export interface Props {
-    onClick?: (ingredient: ModelsIngredient) => void;
+    onClick: (ingredient: ModelsIngredient) => void;
 }
 
 const IngredientForm: React.FC<Props> = ({ onClick }) => {
@@ -39,7 +39,7 @@ const IngredientForm: React.FC<Props> = ({ onClick }) => {
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
         console.log('Form data:', formData);
-        createIngredient({
+        onClick({
             id: generateObjectId(),
             title: formData.title,
             macrosNormalized: {

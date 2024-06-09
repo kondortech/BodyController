@@ -1,14 +1,12 @@
 "use client";
 
-import { ModelsIngredient } from "@/generated/services/nutrition/api";
 import IngredientForm from "./ingredient_form";
-
-const onSubmit = (_: ModelsIngredient) => { }
+import { createIngredient } from "@/services/nutrition/ingredients_api";
 
 const CreateIngredientPage = () => {
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
-            <IngredientForm />
+            <IngredientForm onClick={createIngredient} />
         </div>
     );
 };

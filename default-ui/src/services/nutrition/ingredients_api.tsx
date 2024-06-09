@@ -41,4 +41,3 @@ export const deleteIngredient = async (entityId: string): Promise<ApiDeleteIngre
 
     return resp.data;
 };
-
