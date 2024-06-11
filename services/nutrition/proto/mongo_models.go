@@ -81,19 +81,19 @@ func (instance *IngredientMongo) Proto() (*Ingredient, error) {
 }
 
 type WeightedIngredientMongo struct {
-	Ingredient *IngredientMongo `bson:"ingredient"`
-	Gramms     float32          `bson:"gramms"`
+	IngredientId primitive.ObjectID `bson:"ingredient_id"`
+	Gramms       float32            `bson:"gramms"`
 }
 
 func (instance *WeightedIngredient) Mongo() (*WeightedIngredientMongo, error) {
-	ingredient, err := instance.GetIngredient().Mongo()
+	ingredientId, err := primitive.ObjectIDFromHex(instance.GetIngredientId())
 	if err != nil {
-		return nil, err
+		return nil, ErrInvalidId
 	}
 
 	return &WeightedIngredientMongo{
-		Ingredient: ingredient,
-		Gramms:     instance.GetGramms(),
+		IngredientId: ingredientId,
+		Gramms:       instance.GetGramms(),
 	}, nil
 }
 
@@ -102,22 +102,17 @@ func (instance *WeightedIngredientMongo) Proto() (*WeightedIngredient, error) {
 		return nil, ErrNilInstance
 	}
 
-	ingredient, err := instance.Ingredient.Proto()
-	if err != nil {
-		return nil, err
-	}
-
 	return &WeightedIngredient{
-		Ingredient: ingredient,
-		Gramms:     instance.Gramms,
+		IngredientId: instance.IngredientId.Hex(),
+		Gramms:       instance.Gramms,
 	}, nil
 }
 
 type RecipeMongo struct {
-	Id                primitive.ObjectID `bson:"_id,omitempty"`
-	Title             string             `bson:"title"`
-	RecipeDescription string             `bson:"recipe_description"`
-	BaseIngredients   []*IngredientMongo `bson:"base_ingredients"`
+	Id            primitive.ObjectID   `bson:"_id,omitempty"`
+	Title         string               `bson:"title"`
+	Description   string               `bson:"description"`
+	IngredientIds []primitive.ObjectID `bson:"ingredient_ids"`
 }
 
 func (instance *Recipe) Mongo() (*RecipeMongo, error) {
@@ -126,20 +121,20 @@ func (instance *Recipe) Mongo() (*RecipeMongo, error) {
 		return nil, ErrInvalidId
 	}
 
-	ingredients := make([]*IngredientMongo, 0, len(instance.GetBaseIngredients()))
-	for _, ingredient := range instance.GetBaseIngredients() {
-		ingredientMongo, err := ingredient.Mongo()
+	ingredientIds := make([]primitive.ObjectID, 0, len(instance.GetIngredientIds()))
+	for _, ingredientHexId := range instance.GetIngredientIds() {
+		ingredientId, err := primitive.ObjectIDFromHex(ingredientHexId)
 		if err != nil {
-			return nil, err
+			return nil, ErrInvalidId
 		}
-		ingredients = append(ingredients, ingredientMongo)
+		ingredientIds = append(ingredientIds, ingredientId)
 	}
 
 	return &RecipeMongo{
-		Id:                id,
-		Title:             instance.GetTitle(),
-		RecipeDescription: instance.GetRecipeDescription(),
-		BaseIngredients:   ingredients,
+		Id:            id,
+		Title:         instance.GetTitle(),
+		Description:   instance.GetDescription(),
+		IngredientIds: ingredientIds,
 	}, nil
 }
 
@@ -148,20 +143,16 @@ func (instance *RecipeMongo) Proto() (*Recipe, error) {
 		return nil, ErrNilInstance
 	}
 
-	ingredients := make([]*Ingredient, 0, len(instance.BaseIngredients))
-	for _, ingredientMongo := range instance.BaseIngredients {
-		ingredient, err := ingredientMongo.Proto()
-		if err != nil {
-			return nil, err
-		}
-		ingredients = append(ingredients, ingredient)
+	ingredientIds := make([]string, 0, len(instance.IngredientIds))
+	for _, mongoIngredientId := range instance.IngredientIds {
+		ingredientIds = append(ingredientIds, mongoIngredientId.Hex())
 	}
 
 	return &Recipe{
-		Id:                instance.Id.Hex(),
-		Title:             instance.Title,
-		RecipeDescription: instance.RecipeDescription,
-		BaseIngredients:   ingredients,
+		Id:            instance.Id.Hex(),
+		Title:         instance.Title,
+		Description:   instance.Description,
+		IngredientIds: ingredientIds,
 	}, nil
 }
 

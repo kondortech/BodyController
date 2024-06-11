@@ -1,62 +1,41 @@
-import React from "react";
-import { Recipe, RecipeCard } from "./recipe_card";
-import styles from './styles.module.css'
+'use client';
+
+import React, { useEffect, useState } from "react";
+import { RecipeCard } from "./recipe_card";
+import Head from "next/head";
+import { ApiListRecipesResponse, ModelsRecipe } from "@/generated/services/nutrition/api";
+import { listRecipes } from "@/services/nutrition/api";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 
 export default function Page() {
-  const ingredients: Recipe[] = [
-    {
+  const [recipes, updateRecipes] = useState<ModelsRecipe[]>([]);
 
-      title: "Ham",
-      macros: {
-        calories: 100,
-        proteins: 22,
-        carbs: 5,
-        fats: 3,
-      },
-    },
-    {
-
-      title: "White bread",
-      macros: {
-        calories: 360,
-        proteins: 5.5,
-        carbs: 62.4,
-        fats: 6.9,
-      },
-    },
-    {
-
-      title: "White bread",
-      macros: {
-        calories: 360,
-        proteins: 5.5,
-        carbs: 62.4,
-        fats: 6.9,
-      },
-    },
-    {
-
-      title: "White bread",
-      macros: {
-        calories: 360,
-        proteins: 5.5,
-        carbs: 62.4,
-        fats: 6.9,
-      },
-    },
-  ]
+  useEffect(() => {
+    listRecipes().then((resp: ApiListRecipesResponse) => {
+      updateRecipes(resp.entities);
+      console.log("response: ", resp.entities)
+    });
+  }, []);
+  const router = useRouter();
 
   return (
-    <main>
-      <p className={styles.page_title}>Available Ingredients</p>
-      <div className={styles.grid_container}>
-        {ingredients.map((value: Recipe) => {
-          return (
-            <RecipeCard ingredient={value} />
-          )
-        })}
+    <div className="min-h-screen bg-gray-100 py-10">
+      <Head>
+        <title>Recipes</title>
+      </Head>
+      <div className="container mx-auto px-4">
+        <Button onClick={() => { router.push('/nutrition/recipes/create'); }}>
+          Create Recipe
+        </Button>
+        <h1 className="text-4xl font-bold text-center mb-8">Recipes</h1>
+        <div className="space-y-8">
+          {recipes.map((recipe) => (
+            <RecipeCard key={recipe.id} title={recipe.title} description={recipe.description} />
+          ))}
+        </div>
       </div>
-    </main>
+    </div>
   );
 }

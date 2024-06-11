@@ -1,44 +1,26 @@
 "use client";
 
 import React from 'react';
-import styles from './styles.module.css'
 
-import Image from 'next/image'
+const defaultImagePath = "/ingredient-default.jpg";
 
-export type Macros = {
-    calories: number;
-    proteins: number;
-    carbs: number;
-    fats: number;
-};
-
-export type Recipe = {
+export type Props = {
     title: string;
-    macros: Macros;
-};
-
-type Props = {
-    ingredient: Recipe;
-
+    description: string;
 };
 
 export const RecipeCard = (props: Props): JSX.Element => {
     return (
-        <div className={styles.card}>
-            <Image
-                src="/ingredient-default.jpg"
-                width={100}
-                height={100}
-                alt={props.ingredient.title}
-                className={styles.card_image}
-            />
-            <div>
-                <p className={styles.card_title}>{props.ingredient.title}</p>
-                <p>Calories: {props.ingredient.macros.calories}</p>
-                <p>Proteins: {props.ingredient.macros.proteins}</p>
-                <p>Carbs: {props.ingredient.macros.carbs}</p>
-                <p>Fats: {props.ingredient.macros.fats}</p>
+        <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl">
+            <div className="md:flex">
+                <div className="md:shrink-0">
+                    <img className="h-48 w-full object-cover md:h-full md:w-48" src={defaultImagePath} alt={props.title} />
+                </div>
+                <div className="p-8">
+                    <div className="uppercase tracking-wide text-sm text-indigo-500 font-semibold">{props.title}</div>
+                    <p className="mt-2 text-gray-500">{props.description}</p>
+                </div>
             </div>
-        </div >
+        </div>
     );
 }

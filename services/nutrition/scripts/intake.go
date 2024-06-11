@@ -72,17 +72,8 @@ func main() {
 			},
 			WeightedIngredients: []*pb.WeightedIngredient{
 				{
-					Ingredient: &pb.Ingredient{
-						Id:    primitive.NewObjectID().Hex(),
-						Title: "Some good shit 2",
-						MacrosNormalized: &pb.Macros{
-							Calories: 10,
-							Proteins: 0,
-							Carbs:    2,
-							Fats:     0,
-						},
-					},
-					Gramms: 1000,
+					IngredientId: primitive.NewObjectID().Hex(),
+					Gramms:       1000,
 				},
 			},
 			Timestamp:  timestamppb.Now(),

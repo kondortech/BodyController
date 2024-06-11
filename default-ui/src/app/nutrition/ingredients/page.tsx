@@ -4,7 +4,7 @@ import IngredientCard from "./ingredient_card";
 import { ApiListIngredientsResponse, ModelsIngredient } from "@/generated/services/nutrition/api";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { listIngredients } from "@/services/nutrition/ingredients_api";
+import { listIngredients } from "@/services/nutrition/api";
 import Head from "next/head";
 
 export default function Page() {
@@ -30,7 +30,7 @@ export default function Page() {
 					<h1 className="text-4xl font-bold text-center mb-8">Ingredients List</h1>
 					<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
 						{ingredientsState?.map((ingredient: ModelsIngredient) => (
-							<IngredientCard key={ingredient.id} ingredient={ingredient} />
+							<IngredientCard key={ingredient.id} ingredient={ingredient} onClick={() => { }} />
 						))}
 					</div>
 				</div>

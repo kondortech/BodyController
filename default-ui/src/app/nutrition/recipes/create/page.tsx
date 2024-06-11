@@ -1,12 +1,12 @@
 "use client";
 
-import IngredientForm from "./ingredient_form";
-import { createIngredient } from "@/services/nutrition/api";
+import RecipeForm from "./recipe_form";
+import { createRecipe } from "@/services/nutrition/api";
 
 const CreateIngredientPage = () => {
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-100">
-            <IngredientForm onClick={createIngredient} />
+            <RecipeForm onClick={createRecipe} />
         </div>
     );
 };
