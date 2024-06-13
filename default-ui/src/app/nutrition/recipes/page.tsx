@@ -1,5 +1,6 @@
 'use client';
 
+import '@/app/globals.css';
 import React, { useEffect, useState } from "react";
 import { RecipeCard } from "./recipe_card";
 import Head from "next/head";
@@ -15,7 +16,6 @@ export default function Page() {
   useEffect(() => {
     listRecipes().then((resp: ApiListRecipesResponse) => {
       updateRecipes(resp.entities);
-      console.log("response: ", resp.entities)
     });
   }, []);
   const router = useRouter();
@@ -32,7 +32,7 @@ export default function Page() {
         <h1 className="text-4xl font-bold text-center mb-8">Recipes</h1>
         <div className="space-y-8">
           {recipes.map((recipe) => (
-            <RecipeCard key={recipe.id} title={recipe.title} description={recipe.description} />
+            <RecipeCard key={recipe.id} recipe={recipe} />
           ))}
         </div>
       </div>

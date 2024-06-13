@@ -1,23 +1,30 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 
 import { ModelsIngredient } from '@/generated/services/nutrition/api';
-import { deleteIngredient } from '@/services/nutrition/api';
 
 const defaultImagePath = "/ingredient-default.jpg";
 
 interface IngredientCardProps {
     ingredient: ModelsIngredient;
-    onClick: (ingredient: ModelsIngredient) => void;
+    onSelect: (ingredient: ModelsIngredient) => void;
+    onDeselect: (ingredient: ModelsIngredient) => void;
 }
 
-const IngredientCard: React.FC<IngredientCardProps> = ({ ingredient, onClick }) => {
+const IngredientCard: React.FC<IngredientCardProps> = ({ ingredient, onSelect, onDeselect }) => {
+    const [selected, setSelected] = useState<boolean>(false);
+
     return (
         <div
-            className="bg-white rounded-lg shadow-md p-4 cursor-pointer transform hover:scale-105 transition-transform"
+            className={"bg-white rounded-lg shadow-md p-4 cursor-pointer transform hover:scale-105 transition-transform border" + (selected ? " border-green-500" : "")}
             onClick={() => {
-                return onClick(ingredient);
+                if (!selected) {
+                    onSelect(ingredient);
+                } else {
+                    onDeselect(ingredient);
+                }
+                setSelected((prevValue: boolean) => !prevValue);
             }}
         >
             <img src={defaultImagePath} alt={ingredient.title} className="w-full h-32 object-cover rounded-md mb-4" />
@@ -26,11 +33,6 @@ const IngredientCard: React.FC<IngredientCardProps> = ({ ingredient, onClick }) 
             <p>Proteins: {ingredient.macrosNormalized.proteins}</p>
             <p>Carbs: {ingredient.macrosNormalized.carbs}</p>
             <p>Fat: {ingredient.macrosNormalized.fats}</p>
-            <div onClick={() => {
-                deleteIngredient(ingredient.id);
-            }} className="w-full h-12 object-cover rounded-md mb-4 bg-red-600">
-                delete
-            </div>
         </div>
     );
 };

@@ -2,7 +2,6 @@
 
 import '@/app/globals.css';
 import { ModelsIngredient } from '@/generated/services/nutrition/api';
-import { createIngredient } from '@/services/nutrition/api';
 import { generateObjectId } from '@/utils/bson_handling';
 import { ChangeEvent, FormEvent, useState } from 'react';
 

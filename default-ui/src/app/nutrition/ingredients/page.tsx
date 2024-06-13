@@ -1,4 +1,7 @@
 'use client'
+
+
+import '@/app/globals.css';
 import React, { useEffect, useState } from "react";
 import IngredientCard from "./ingredient_card";
 import { ApiListIngredientsResponse, ModelsIngredient } from "@/generated/services/nutrition/api";
