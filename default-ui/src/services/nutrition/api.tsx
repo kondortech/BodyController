@@ -1,6 +1,6 @@
 'use server'
 
-import { Api, ApiListIngredientsResponse, HttpResponse, RpcStatus, ApiCreateIngredientResponse, ModelsIngredient, ApiDeleteIngredientResponse, ApiListRecipesResponse, ModelsRecipe, ApiCreateRecipeResponse, ApiDeleteRecipeResponse } from "@/generated/services/nutrition/api";
+import { Api, ApiListIngredientsResponse, HttpResponse, RpcStatus, ApiCreateIngredientResponse, ModelsIngredient, ApiDeleteIngredientResponse, ApiListRecipesResponse, ModelsRecipe, ApiCreateRecipeResponse, ApiDeleteRecipeResponse, ApiListMealsResponse, ApiCreateMealResponse, ApiDeleteMealResponse, ModelsMeal } from "@/generated/services/nutrition/api";
 
 const baseURL: string = "http://0.0.0.0:8080";
 
@@ -73,6 +73,45 @@ export const deleteRecipe = async (entityId: string): Promise<ApiDeleteRecipeRes
     const apiClient = new Api({ baseUrl: baseURL });
 
     const resp: HttpResponse<ApiDeleteRecipeResponse, RpcStatus> = await apiClient.nutrition.nutritionDeleteRecipe(entityId);
+
+    console.log(resp.error);
+    console.log(resp.data);
+
+    return resp.data;
+};
+
+
+export const listMeals = async (): Promise<ApiListMealsResponse> => {
+    const apiClient = new Api({ baseUrl: baseURL });
+
+    const resp: HttpResponse<ApiListMealsResponse, RpcStatus> = await apiClient.nutrition.nutritionListMeals({
+        pageSize: 20,
+    });
+
+    console.log(resp.error);
+    console.log(resp.data);
+
+    return resp.data;
+};
+
+
+export const createMeal = async (entity: ModelsMeal): Promise<ApiCreateMealResponse> => {
+    const apiClient = new Api({ baseUrl: baseURL });
+
+    const resp: HttpResponse<ApiCreateMealResponse, RpcStatus> = await apiClient.nutrition.nutritionCreateMeal({
+        entity: entity
+    });
+
+    console.log(resp.error);
+    console.log(resp.data);
+
+    return resp.data;
+};
+
+export const deleteMeal = async (entityId: string): Promise<ApiDeleteMealResponse> => {
+    const apiClient = new Api({ baseUrl: baseURL });
+
+    const resp: HttpResponse<ApiDeleteMealResponse, RpcStatus> = await apiClient.nutrition.nutritionDeleteMeal(entityId);
 
     console.log(resp.error);
     console.log(resp.data);

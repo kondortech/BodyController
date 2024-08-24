@@ -13,7 +13,8 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 
-	pb "github.com/kirvader/BodyController/services/nutrition/proto"
+	mongoNutrition "github.com/kirvader/BodyController/services/nutrition/mongo"
+	pbNutrition "github.com/kirvader/BodyController/services/nutrition/proto"
 )
 
 const (
@@ -21,7 +22,7 @@ const (
 	OperationDelete string = "DELETE"
 )
 
-func (svc *Service) CreateIngredient(ctx context.Context, req *pb.CreateIngredientRequest) (*pb.CreateIngredientResponse, error) {
+func (svc *Service) CreateIngredient(ctx context.Context, req *pbNutrition.CreateIngredientRequest) (*pbNutrition.CreateIngredientResponse, error) {
 	if req == nil || req.GetEntity() == nil || req.GetEntity().GetId() == "" { // TODO add real validation
 		return nil, errors.New("nil instance")
 	}
@@ -47,12 +48,12 @@ func (svc *Service) CreateIngredient(ctx context.Context, req *pb.CreateIngredie
 	}
 	log.Println("published CREATE event with id: ", req.GetEntity().GetId())
 
-	return &pb.CreateIngredientResponse{
+	return &pbNutrition.CreateIngredientResponse{
 		EntityId: req.Entity.Id,
 	}, nil
 }
 
-func (svc *Service) DeleteIngredient(ctx context.Context, req *pb.DeleteIngredientRequest) (*pb.DeleteIngredientResponse, error) {
+func (svc *Service) DeleteIngredient(ctx context.Context, req *pbNutrition.DeleteIngredientRequest) (*pbNutrition.DeleteIngredientResponse, error) {
 	if req == nil || req.EntityId == "" { // TODO add real validation
 		return nil, errors.New("nil instance")
 	}
@@ -78,10 +79,10 @@ func (svc *Service) DeleteIngredient(ctx context.Context, req *pb.DeleteIngredie
 	}
 	log.Println("published DELETE event with id: ", req.EntityId)
 
-	return &pb.DeleteIngredientResponse{}, nil
+	return &pbNutrition.DeleteIngredientResponse{}, nil
 }
 
-func (svc *Service) ListIngredients(ctx context.Context, req *pb.ListIngredientsRequest) (*pb.ListIngredientsResponse, error) {
+func (svc *Service) ListIngredients(ctx context.Context, req *pbNutrition.ListIngredientsRequest) (*pbNutrition.ListIngredientsResponse, error) {
 	var pageSize, pageOffset int32
 	if req.GetPageToken() != nil {
 		pageSizeFromToken, pageOffsetFromToken, err := deconstructPageToken(req.GetPageToken().GetValue())
@@ -113,16 +114,16 @@ func (svc *Service) ListIngredients(ctx context.Context, req *pb.ListIngredients
 	}
 	defer cursor.Close(ctx)
 
-	result := make([]*pb.Ingredient, 0, req.GetPageSize())
+	result := make([]*pbNutrition.Ingredient, 0, req.GetPageSize())
 
 	for cursor.Next(ctx) {
-		var mongoInstance pb.IngredientMongo
-		err := cursor.Decode(&mongoInstance)
+		var mongoInstance *mongoNutrition.Ingredient
+		err := cursor.Decode(mongoInstance)
 		if err != nil {
 			return nil, fmt.Errorf("cursor decode error: %v", err)
 		}
 
-		protoInstance, err := mongoInstance.Proto()
+		protoInstance, err := mongoNutrition.IngredientToProto(mongoInstance)
 		if err != nil {
 			return nil, fmt.Errorf("mongo instance parsing failed: %v", err)
 		}
@@ -134,7 +135,7 @@ func (svc *Service) ListIngredients(ctx context.Context, req *pb.ListIngredients
 		return nil, fmt.Errorf("cursor error: %v", err)
 	}
 	if int32(len(result)) < pageSize {
-		return &pb.ListIngredientsResponse{
+		return &pbNutrition.ListIngredientsResponse{
 			Entities: result,
 		}, nil
 	}
@@ -143,7 +144,7 @@ func (svc *Service) ListIngredients(ctx context.Context, req *pb.ListIngredients
 		return nil, err
 	}
 
-	return &pb.ListIngredientsResponse{
+	return &pbNutrition.ListIngredientsResponse{
 		Entities: result,
 		NextPageToken: &wrapperspb.StringValue{
 			Value: nextPageToken,

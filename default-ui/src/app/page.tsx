@@ -9,7 +9,7 @@ export default function Home() {
 				<div className={styles.section}>
 					<Tile link="/nutrition/ingredients" title="Ingredients" description="Fresh ingredients with verified macros" />
 					<Tile link="/nutrition/recipes" title="Recipes" description="Delicious recipes with verified examples" />
-					<Tile link="/nutrition/planning" title="Planning" description="Your nutrition plan" />
+					<Tile link="/nutrition/meals" title="Meals" description="Your nutrition plan" />
 				</div>
 			</Collapsible>
 		</main>

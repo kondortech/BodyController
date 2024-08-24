@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"log"
 
-	pb "github.com/kirvader/BodyController/services/nutrition/proto"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/protobuf/encoding/protojson"
+
+	mongoNutrition "github.com/kirvader/BodyController/services/nutrition/mongo"
+	pbNutrition "github.com/kirvader/BodyController/services/nutrition/proto"
 )
 
 func ProcessMealOperation(ctx context.Context, mongoClient *mongo.Client, item amqp.Delivery) error {
@@ -24,7 +26,7 @@ func ProcessMealOperation(ctx context.Context, mongoClient *mongo.Client, item a
 }
 
 func CreateMeal(ctx context.Context, mongoClient *mongo.Client, protoBytes []byte) error {
-	var createRequest pb.CreateMealRequest
+	var createRequest pbNutrition.CreateMealRequest
 	err := protojson.Unmarshal(protoBytes, &createRequest)
 	if err != nil {
 		return err
@@ -33,7 +35,7 @@ func CreateMeal(ctx context.Context, mongoClient *mongo.Client, protoBytes []byt
 
 	coll := mongoClient.Database("BodyController").Collection("Meals")
 
-	mongoInstance, err := createRequest.GetEntity().Mongo()
+	mongoInstance, err := mongoNutrition.MealFromProto(createRequest.GetEntity())
 	if err != nil {
 		return fmt.Errorf("parsing error: %v", err)
 	}
@@ -45,7 +47,7 @@ func CreateMeal(ctx context.Context, mongoClient *mongo.Client, protoBytes []byt
 func DeleteMeal(ctx context.Context, mongoClient *mongo.Client, protoBytes []byte) error {
 	coll := mongoClient.Database("BodyController").Collection("Meals")
 
-	var deleteRequest pb.DeleteMealRequest
+	var deleteRequest pbNutrition.DeleteMealRequest
 	err := protojson.Unmarshal(protoBytes, &deleteRequest)
 	if err != nil {
 		return err

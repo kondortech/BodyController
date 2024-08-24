@@ -1,0 +1,42 @@
+.card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 10px;
+    background-color: ghostwhite;
+    width: 300px;
+    padding: 1ch;
+}
+
+.card_image {
+    width: 100%;
+    border-color: black;
+    border-width: 2px;
+    border-radius: 10px;
+}
+
+.card_title {
+    padding-top: 20px;
+    font-size: 25px;
+    font-weight: 900;
+}
+
+.grid_container {
+    margin: auto;
+    padding: 50px;
+    grid-template-columns: auto auto auto;
+    gap: 50px;
+    display: grid;
+    min-width: 70%;
+    width: fit-content;
+
+    border-color: black;
+    border-width: 2px;
+}
+
+.page_title {
+    text-align: center;
+    padding-top: 50px;
+    font-size: 50px;
+    font-weight: 900;
+}

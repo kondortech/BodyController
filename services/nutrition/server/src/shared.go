@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 )
 
+// this page token is only a temporary implementation - sufficient for now, but can be changed at any point
 type pageParams struct {
 	PageSize   int32
 	PageOffset int32

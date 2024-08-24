@@ -13,10 +13,11 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 
-	pb "github.com/kirvader/BodyController/services/nutrition/proto"
+	mongoNutrition "github.com/kirvader/BodyController/services/nutrition/mongo"
+	pbNutrition "github.com/kirvader/BodyController/services/nutrition/proto"
 )
 
-func (svc *Service) CreateMeal(ctx context.Context, req *pb.CreateMealRequest) (*pb.CreateMealResponse, error) {
+func (svc *Service) CreateMeal(ctx context.Context, req *pbNutrition.CreateMealRequest) (*pbNutrition.CreateMealResponse, error) {
 	if req == nil || req.GetEntity() == nil || req.GetEntity().GetId() == "" { // TODO add real validation
 		return nil, errors.New("nil instance")
 	}
@@ -42,7 +43,7 @@ func (svc *Service) CreateMeal(ctx context.Context, req *pb.CreateMealRequest) (
 	}
 	log.Println("published CREATE event with id: ", req.GetEntity().GetId())
 
-	return &pb.CreateMealResponse{
+	return &pbNutrition.CreateMealResponse{
 		EntityId: req.GetEntity().GetId(),
 	}, nil
 
@@ -81,7 +82,7 @@ func (svc *Service) CreateMeal(ctx context.Context, req *pb.CreateMealRequest) (
 }
 
 // DeleteMeal implements proto.NutritionServer.
-func (svc *Service) DeleteMeal(ctx context.Context, req *pb.DeleteMealRequest) (*pb.DeleteMealResponse, error) {
+func (svc *Service) DeleteMeal(ctx context.Context, req *pbNutrition.DeleteMealRequest) (*pbNutrition.DeleteMealResponse, error) {
 	if req == nil || req.EntityId == "" { // TODO add real validation
 		return nil, errors.New("nil instance")
 	}
@@ -107,7 +108,7 @@ func (svc *Service) DeleteMeal(ctx context.Context, req *pb.DeleteMealRequest) (
 	}
 	log.Println("published DELETE event with id: ", req.EntityId)
 
-	return &pb.DeleteMealResponse{}, nil
+	return &pbNutrition.DeleteMealResponse{}, nil
 	// coll := svc.mongoClient.Database("BodyController").Collection("Meals")
 
 	// objectId, err := primitive.ObjectIDFromHex(req.GetEntityId())
@@ -127,7 +128,7 @@ func (svc *Service) DeleteMeal(ctx context.Context, req *pb.DeleteMealRequest) (
 }
 
 // ListMeals implements proto.NutritionServer.
-func (svc *Service) ListMeals(ctx context.Context, req *pb.ListMealsRequest) (*pb.ListMealsResponse, error) {
+func (svc *Service) ListMeals(ctx context.Context, req *pbNutrition.ListMealsRequest) (*pbNutrition.ListMealsResponse, error) {
 	var pageSize, pageOffset int32
 	if req.GetPageToken() != nil {
 		pageSizeFromToken, pageOffsetFromToken, err := deconstructPageToken(req.GetPageToken().GetValue())
@@ -149,7 +150,7 @@ func (svc *Service) ListMeals(ctx context.Context, req *pb.ListMealsRequest) (*p
 	coll := svc.mongoClient.Database("BodyController").Collection("Meals")
 
 	options := options.Find()
-	options.SetSort(bson.M{"username": 1, "timestamp": -1})
+	options.SetSort(bson.M{"timestamp": -1})
 	options.SetSkip(int64(pageOffset))
 	options.SetLimit(int64(pageSize))
 
@@ -159,15 +160,15 @@ func (svc *Service) ListMeals(ctx context.Context, req *pb.ListMealsRequest) (*p
 	}
 	defer cursor.Close(ctx)
 
-	result := make([]*pb.Meal, 0, req.GetPageSize())
+	result := make([]*pbNutrition.Meal, 0, req.GetPageSize())
 
 	for cursor.Next(ctx) {
-		var mongoInstance pb.MealMongo
-		err := cursor.Decode(&mongoInstance)
+		var mongoInstance *mongoNutrition.Meal
+		err := cursor.Decode(mongoInstance)
 		if err != nil {
 			return nil, fmt.Errorf("cursor decode error: %v", err)
 		}
-		instance, err := mongoInstance.Proto()
+		instance, err := mongoNutrition.MealToProto(mongoInstance)
 		if err != nil {
 			return nil, fmt.Errorf("failed to parse mongo record: %v", err)
 		}
@@ -179,7 +180,7 @@ func (svc *Service) ListMeals(ctx context.Context, req *pb.ListMealsRequest) (*p
 		return nil, fmt.Errorf("cursor error: %v", err)
 	}
 	if int32(len(result)) < pageSize {
-		return &pb.ListMealsResponse{
+		return &pbNutrition.ListMealsResponse{
 			Entities: result,
 		}, nil
 	}
@@ -189,7 +190,7 @@ func (svc *Service) ListMeals(ctx context.Context, req *pb.ListMealsRequest) (*p
 		return nil, err
 	}
 
-	return &pb.ListMealsResponse{
+	return &pbNutrition.ListMealsResponse{
 		Entities: result,
 		NextPageToken: &wrapperspb.StringValue{
 			Value: nextPageToken,

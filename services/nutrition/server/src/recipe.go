@@ -7,16 +7,17 @@ import (
 	"log"
 	"time"
 
+	amqp "github.com/rabbitmq/amqp091-go"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 
-	pb "github.com/kirvader/BodyController/services/nutrition/proto"
-	amqp "github.com/rabbitmq/amqp091-go"
+	mongoNutrition "github.com/kirvader/BodyController/services/nutrition/mongo"
+	pbNutrition "github.com/kirvader/BodyController/services/nutrition/proto"
 )
 
-func (svc *Service) CreateRecipe(ctx context.Context, req *pb.CreateRecipeRequest) (*pb.CreateRecipeResponse, error) {
+func (svc *Service) CreateRecipe(ctx context.Context, req *pbNutrition.CreateRecipeRequest) (*pbNutrition.CreateRecipeResponse, error) {
 	if req == nil || req.GetEntity() == nil || req.GetEntity().GetId() == "" { // TODO add real validation
 		return nil, errors.New("nil instance")
 	}
@@ -42,12 +43,12 @@ func (svc *Service) CreateRecipe(ctx context.Context, req *pb.CreateRecipeReques
 	}
 	log.Println("published CREATE event with id: ", req.GetEntity().GetId())
 
-	return &pb.CreateRecipeResponse{
+	return &pbNutrition.CreateRecipeResponse{
 		EntityId: req.GetEntity().GetId(),
 	}, nil
 }
 
-func (svc *Service) DeleteRecipe(ctx context.Context, req *pb.DeleteRecipeRequest) (*pb.DeleteRecipeResponse, error) {
+func (svc *Service) DeleteRecipe(ctx context.Context, req *pbNutrition.DeleteRecipeRequest) (*pbNutrition.DeleteRecipeResponse, error) {
 	if req == nil || req.EntityId == "" { // TODO add real validation
 		return nil, errors.New("nil instance")
 	}
@@ -73,10 +74,10 @@ func (svc *Service) DeleteRecipe(ctx context.Context, req *pb.DeleteRecipeReques
 	}
 	log.Println("published DELETE event with id: ", req.EntityId)
 
-	return &pb.DeleteRecipeResponse{}, nil
+	return &pbNutrition.DeleteRecipeResponse{}, nil
 }
 
-func (svc *Service) ListRecipes(ctx context.Context, req *pb.ListRecipesRequest) (*pb.ListRecipesResponse, error) {
+func (svc *Service) ListRecipes(ctx context.Context, req *pbNutrition.ListRecipesRequest) (*pbNutrition.ListRecipesResponse, error) {
 	var pageSize, pageOffset int32
 	if req.GetPageToken() != nil {
 		pageSizeFromToken, pageOffsetFromToken, err := deconstructPageToken(req.GetPageToken().GetValue())
@@ -108,16 +109,16 @@ func (svc *Service) ListRecipes(ctx context.Context, req *pb.ListRecipesRequest)
 	}
 	defer cursor.Close(ctx)
 
-	result := make([]*pb.Recipe, 0, req.GetPageSize())
+	result := make([]*pbNutrition.Recipe, 0, req.GetPageSize())
 
 	for cursor.Next(ctx) {
-		var mongoInstance pb.RecipeMongo
-		err := cursor.Decode(&mongoInstance)
+		var mongoInstance *mongoNutrition.Recipe
+		err := cursor.Decode(mongoInstance)
 		if err != nil {
 			return nil, fmt.Errorf("cursor decode error: %v", err)
 		}
 
-		instance, err := mongoInstance.Proto()
+		instance, err := mongoNutrition.RecipeToProto(mongoInstance)
 		if err != nil {
 			return nil, fmt.Errorf("failed to parse entity: %v", err)
 		}
@@ -130,7 +131,7 @@ func (svc *Service) ListRecipes(ctx context.Context, req *pb.ListRecipesRequest)
 	}
 
 	if int32(len(result)) < pageSize {
-		return &pb.ListRecipesResponse{
+		return &pbNutrition.ListRecipesResponse{
 			Entities: result,
 		}, nil
 	}
@@ -140,7 +141,7 @@ func (svc *Service) ListRecipes(ctx context.Context, req *pb.ListRecipesRequest)
 		return nil, err
 	}
 
-	return &pb.ListRecipesResponse{
+	return &pbNutrition.ListRecipesResponse{
 		Entities: result,
 		NextPageToken: &wrapperspb.StringValue{
 			Value: nextPageToken,

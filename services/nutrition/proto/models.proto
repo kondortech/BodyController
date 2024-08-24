@@ -16,20 +16,23 @@ message Macros {
 
 message Ingredient {
     string id = 1 [(google.api.field_behavior) = REQUIRED];
-    string title = 2 [(google.api.field_behavior) = REQUIRED];
-    Macros macros_normalized = 4 [(google.api.field_behavior) = REQUIRED];
+    string name = 2 [(google.api.field_behavior) = REQUIRED];
+    google.protobuf.StringValue image_path = 3 [(google.api.field_behavior) = OPTIONAL];
+    Macros macros_normalized_to100g = 4 [(google.api.field_behavior) = REQUIRED];
 };
 
 message WeightedIngredient {
     string ingredient_id = 1 [(google.api.field_behavior) = REQUIRED];
-    float gramms = 2 [(google.api.field_behavior) = REQUIRED];
+    float mass = 2 [(google.api.field_behavior) = REQUIRED];
 };
 
 message Recipe {
     string id = 1 [(google.api.field_behavior) = REQUIRED];
-    string title = 2 [(google.api.field_behavior) = REQUIRED];
-    string description = 3 [(google.api.field_behavior) = REQUIRED];
-    repeated string ingredient_ids = 4 [(google.api.field_behavior) = REQUIRED];
+    string name = 2 [(google.api.field_behavior) = REQUIRED];
+    string taste_description = 3 [(google.api.field_behavior) = REQUIRED];
+    string cooking_steps_description = 4 [(google.api.field_behavior) = REQUIRED];
+    repeated WeightedIngredient original_ingredients_proportion = 5 [(google.api.field_behavior) = REQUIRED];
+    google.protobuf.StringValue image_path = 6 [(google.api.field_behavior) = OPTIONAL];
 };
 
 enum MealStatus {
@@ -40,9 +43,10 @@ enum MealStatus {
 
 message Meal {
     string id = 1 [(google.api.field_behavior) = REQUIRED];
-    string username = 2 [(google.api.field_behavior) = REQUIRED];
-    google.protobuf.StringValue recipe_id = 3 [(google.api.field_behavior) = REQUIRED];
+    string author = 2 [(google.api.field_behavior) = REQUIRED];
+    google.protobuf.StringValue base_recipe_id = 3 [(google.api.field_behavior) = OPTIONAL];
     repeated WeightedIngredient weighted_ingredients = 4 [(google.api.field_behavior) = REQUIRED];
-    google.protobuf.Timestamp timestamp = 5 [(google.api.field_behavior) = REQUIRED];
-    MealStatus meal_status = 6 [(google.api.field_behavior) = REQUIRED];
+    google.protobuf.Timestamp consumption_timestamp = 5 [(google.api.field_behavior) = REQUIRED];
+    google.protobuf.StringValue image_path = 6 [(google.api.field_behavior) = OPTIONAL];
+
 };

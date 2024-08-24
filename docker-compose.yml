@@ -72,6 +72,8 @@ services:
       - MONGODB_PORT=27017
     ports:
       - 50001:50001
+    expose:
+      - 50001
     networks:
       - nutrition-network-int
       - nutrition-network-ext

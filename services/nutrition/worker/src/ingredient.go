@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"log"
 
-	pb "github.com/kirvader/BodyController/services/nutrition/proto"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/protobuf/encoding/protojson"
+
+	mongoNutrition "github.com/kirvader/BodyController/services/nutrition/mongo"
+	pbNutrition "github.com/kirvader/BodyController/services/nutrition/proto"
 )
 
 func ProcessIngredientOperation(ctx context.Context, mongoClient *mongo.Client, item amqp.Delivery) error {
@@ -26,14 +28,14 @@ func ProcessIngredientOperation(ctx context.Context, mongoClient *mongo.Client, 
 func CreateIngredient(ctx context.Context, mongoClient *mongo.Client, protoBytes []byte) error {
 	coll := mongoClient.Database("BodyController").Collection("Ingredients")
 
-	var createRequest pb.CreateIngredientRequest
+	var createRequest pbNutrition.CreateIngredientRequest
 	err := protojson.Unmarshal(protoBytes, &createRequest)
 	if err != nil {
 		return err
 	}
 	log.Printf("got create request: %s", protojson.Format(&createRequest))
 
-	mongoInstance, err := createRequest.GetEntity().Mongo()
+	mongoInstance, err := mongoNutrition.IngredientFromProto(createRequest.GetEntity())
 	if err != nil {
 		return fmt.Errorf("parsing error: %v", err)
 	}
@@ -45,7 +47,7 @@ func CreateIngredient(ctx context.Context, mongoClient *mongo.Client, protoBytes
 func DeleteIngredient(ctx context.Context, mongoClient *mongo.Client, protoBytes []byte) error {
 	coll := mongoClient.Database("BodyController").Collection("Ingredients")
 
-	var deleteRequest pb.DeleteIngredientRequest
+	var deleteRequest pbNutrition.DeleteIngredientRequest
 	err := protojson.Unmarshal(protoBytes, &deleteRequest)
 	if err != nil {
 		return err
