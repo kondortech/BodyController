@@ -1,4 +1,4 @@
-package src
+package source
 
 import (
 	b64 "encoding/base64"

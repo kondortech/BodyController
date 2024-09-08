@@ -32,7 +32,7 @@ services:
 
   nutrition-message-broker-rabbitmq:
     build:
-      context: ./services/nutrition/worker/mq
+      context: services/mq
       dockerfile: ./message-broker-rabbitmq.Dockerfile
     container_name: nutrition-message-broker-rabbitmq
     healthcheck:

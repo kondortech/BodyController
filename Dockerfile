@@ -1,7 +1,20 @@
-FROM golang:1.21
+FROM golang:1.23-alpine AS builder
 
-WORKDIR /
+WORKDIR /app
 
-COPY ./ .
+COPY ./ /app
 
 RUN go mod download
+RUN go build -o run ./cmd/main.go
+
+FROM alpine:latest
+
+WORKDIR /app
+
+COPY --from=builder /app/run /app/run
+
+EXPOSE 8000
+
+ENTRYPOINT [ "/app/run" ]
+
+RUN ["nutrition"]

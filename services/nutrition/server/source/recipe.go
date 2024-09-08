@@ -1,4 +1,4 @@
-package src
+package source
 
 import (
 	"context"
@@ -17,12 +17,7 @@ import (
 	pbNutrition "github.com/kirvader/BodyController/services/nutrition/proto"
 )
 
-const (
-	OperationCreate string = "CREATE"
-	OperationDelete string = "DELETE"
-)
-
-func (svc *Service) CreateIngredient(ctx context.Context, req *pbNutrition.CreateIngredientRequest) (*pbNutrition.CreateIngredientResponse, error) {
+func (svc *service) CreateRecipe(ctx context.Context, req *pbNutrition.CreateRecipeRequest) (*pbNutrition.CreateRecipeResponse, error) {
 	if req == nil || req.GetEntity() == nil || req.GetEntity().GetId() == "" { // TODO add real validation
 		return nil, errors.New("nil instance")
 	}
@@ -32,11 +27,11 @@ func (svc *Service) CreateIngredient(ctx context.Context, req *pbNutrition.Creat
 		return nil, err
 	}
 
-	err = svc.workerChannelMQ.PublishWithContext(ctx,
-		"",           // exchange
-		"ingredient", // routing key
-		false,        // mandatory
-		false,        // immediate
+	err = svc.rabbitMQConn.PublishWithContext(ctx,
+		"",       // exchange
+		"recipe", // routing key
+		false,    // mandatory
+		false,    // immediate
 		amqp.Publishing{
 			ContentType: "application/json",
 			Type:        OperationCreate,
@@ -48,12 +43,12 @@ func (svc *Service) CreateIngredient(ctx context.Context, req *pbNutrition.Creat
 	}
 	log.Println("published CREATE event with id: ", req.GetEntity().GetId())
 
-	return &pbNutrition.CreateIngredientResponse{
-		EntityId: req.Entity.Id,
+	return &pbNutrition.CreateRecipeResponse{
+		EntityId: req.GetEntity().GetId(),
 	}, nil
 }
 
-func (svc *Service) DeleteIngredient(ctx context.Context, req *pbNutrition.DeleteIngredientRequest) (*pbNutrition.DeleteIngredientResponse, error) {
+func (svc *service) DeleteRecipe(ctx context.Context, req *pbNutrition.DeleteRecipeRequest) (*pbNutrition.DeleteRecipeResponse, error) {
 	if req == nil || req.EntityId == "" { // TODO add real validation
 		return nil, errors.New("nil instance")
 	}
@@ -63,11 +58,11 @@ func (svc *Service) DeleteIngredient(ctx context.Context, req *pbNutrition.Delet
 		return nil, err
 	}
 
-	err = svc.workerChannelMQ.PublishWithContext(ctx,
-		"",           // exchange
-		"ingredient", // routing key
-		false,        // mandatory
-		false,        // immediate
+	err = svc.rabbitMQConn.PublishWithContext(ctx,
+		"",       // exchange
+		"recipe", // routing key
+		false,    // mandatory
+		false,    // immediate
 		amqp.Publishing{
 			ContentType: "application/json",
 			Type:        OperationDelete,
@@ -79,10 +74,10 @@ func (svc *Service) DeleteIngredient(ctx context.Context, req *pbNutrition.Delet
 	}
 	log.Println("published DELETE event with id: ", req.EntityId)
 
-	return &pbNutrition.DeleteIngredientResponse{}, nil
+	return &pbNutrition.DeleteRecipeResponse{}, nil
 }
 
-func (svc *Service) ListIngredients(ctx context.Context, req *pbNutrition.ListIngredientsRequest) (*pbNutrition.ListIngredientsResponse, error) {
+func (svc *service) ListRecipes(ctx context.Context, req *pbNutrition.ListRecipesRequest) (*pbNutrition.ListRecipesResponse, error) {
 	var pageSize, pageOffset int32
 	if req.GetPageToken() != nil {
 		pageSizeFromToken, pageOffsetFromToken, err := deconstructPageToken(req.GetPageToken().GetValue())
@@ -101,7 +96,7 @@ func (svc *Service) ListIngredients(ctx context.Context, req *pbNutrition.ListIn
 		}
 	}
 
-	coll := svc.mongoClient.Database("BodyController").Collection("Ingredients")
+	coll := svc.mongoClient.Database("BodyController").Collection("Recipes")
 
 	options := options.Find()
 	options.SetSort(bson.M{"name": 1})
@@ -114,37 +109,39 @@ func (svc *Service) ListIngredients(ctx context.Context, req *pbNutrition.ListIn
 	}
 	defer cursor.Close(ctx)
 
-	result := make([]*pbNutrition.Ingredient, 0, req.GetPageSize())
+	result := make([]*pbNutrition.Recipe, 0, req.GetPageSize())
 
 	for cursor.Next(ctx) {
-		var mongoInstance *mongoNutrition.Ingredient
+		var mongoInstance *mongoNutrition.Recipe
 		err := cursor.Decode(mongoInstance)
 		if err != nil {
 			return nil, fmt.Errorf("cursor decode error: %v", err)
 		}
 
-		protoInstance, err := mongoNutrition.IngredientToProto(mongoInstance)
+		instance, err := mongoNutrition.RecipeToProto(mongoInstance)
 		if err != nil {
-			return nil, fmt.Errorf("mongo instance parsing failed: %v", err)
+			return nil, fmt.Errorf("failed to parse entity: %v", err)
 		}
 
-		result = append(result, protoInstance)
+		result = append(result, instance)
 	}
 
 	if err := cursor.Err(); err != nil {
 		return nil, fmt.Errorf("cursor error: %v", err)
 	}
+
 	if int32(len(result)) < pageSize {
-		return &pbNutrition.ListIngredientsResponse{
+		return &pbNutrition.ListRecipesResponse{
 			Entities: result,
 		}, nil
 	}
+
 	nextPageToken, err := constructPageToken(pageSize, pageOffset)
 	if err != nil {
 		return nil, err
 	}
 
-	return &pbNutrition.ListIngredientsResponse{
+	return &pbNutrition.ListRecipesResponse{
 		Entities: result,
 		NextPageToken: &wrapperspb.StringValue{
 			Value: nextPageToken,

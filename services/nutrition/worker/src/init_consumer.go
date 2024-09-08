@@ -5,17 +5,27 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/kirvader/BodyController/internal/db"
 	amqp "github.com/rabbitmq/amqp091-go"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"golang.org/x/sync/errgroup"
 )
 
 func InitConsumer(ctx context.Context) error {
-	mongoClient, closeMongoClient, err := db.InitMongoDBClientFromENV(ctx)
+	mongoClient, err := mongo.Connect(ctx, options.Client().ApplyURI(fmt.Sprintf("mongodb://%s:%s", mongoClientIP, mongoClientPort)))
 	if err != nil {
 		return err
 	}
-	defer closeMongoClient()
+	defer func() {
+		if err = mongoClient.Disconnect(ctx); err != nil {
+			panic(err)
+		}
+	}()
+
+	if err = mongoClient.Ping(ctx, readpref.Primary()); err != nil {
+		return err
+	}
 
 	conn, err := amqp.Dial("amqp://guest:guest@nutrition-message-broker-rabbitmq:5672/")
 	if err != nil {

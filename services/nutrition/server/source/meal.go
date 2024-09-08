@@ -1,4 +1,4 @@
-package src
+package source
 
 import (
 	"context"
@@ -17,7 +17,7 @@ import (
 	pbNutrition "github.com/kirvader/BodyController/services/nutrition/proto"
 )
 
-func (svc *Service) CreateMeal(ctx context.Context, req *pbNutrition.CreateMealRequest) (*pbNutrition.CreateMealResponse, error) {
+func (svc *service) CreateMeal(ctx context.Context, req *pbNutrition.CreateMealRequest) (*pbNutrition.CreateMealResponse, error) {
 	if req == nil || req.GetEntity() == nil || req.GetEntity().GetId() == "" { // TODO add real validation
 		return nil, errors.New("nil instance")
 	}
@@ -27,7 +27,7 @@ func (svc *Service) CreateMeal(ctx context.Context, req *pbNutrition.CreateMealR
 		return nil, err
 	}
 
-	err = svc.workerChannelMQ.PublishWithContext(ctx,
+	err = svc.rabbitMQConn.PublishWithContext(ctx,
 		"",     // exchange
 		"meal", // routing key
 		false,  // mandatory
@@ -82,7 +82,7 @@ func (svc *Service) CreateMeal(ctx context.Context, req *pbNutrition.CreateMealR
 }
 
 // DeleteMeal implements proto.NutritionServer.
-func (svc *Service) DeleteMeal(ctx context.Context, req *pbNutrition.DeleteMealRequest) (*pbNutrition.DeleteMealResponse, error) {
+func (svc *service) DeleteMeal(ctx context.Context, req *pbNutrition.DeleteMealRequest) (*pbNutrition.DeleteMealResponse, error) {
 	if req == nil || req.EntityId == "" { // TODO add real validation
 		return nil, errors.New("nil instance")
 	}
@@ -92,7 +92,7 @@ func (svc *Service) DeleteMeal(ctx context.Context, req *pbNutrition.DeleteMealR
 		return nil, err
 	}
 
-	err = svc.workerChannelMQ.PublishWithContext(ctx,
+	err = svc.rabbitMQConn.PublishWithContext(ctx,
 		"",     // exchange
 		"meal", // routing key
 		false,  // mandatory
@@ -128,7 +128,7 @@ func (svc *Service) DeleteMeal(ctx context.Context, req *pbNutrition.DeleteMealR
 }
 
 // ListMeals implements proto.NutritionServer.
-func (svc *Service) ListMeals(ctx context.Context, req *pbNutrition.ListMealsRequest) (*pbNutrition.ListMealsResponse, error) {
+func (svc *service) ListMeals(ctx context.Context, req *pbNutrition.ListMealsRequest) (*pbNutrition.ListMealsResponse, error) {
 	var pageSize, pageOffset int32
 	if req.GetPageToken() != nil {
 		pageSizeFromToken, pageOffsetFromToken, err := deconstructPageToken(req.GetPageToken().GetValue())

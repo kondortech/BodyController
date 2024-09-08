@@ -5,15 +5,6 @@
     "product_version": "3.9.29",
     "users": [
         {
-            "name": "test",
-            "password_hash": "hBH0Kk0SahjCJE/ltmOFwbk6gaXQt2TBziLZdZAPuDgTeiB0",
-            "hashing_algorithm": "rabbit_password_hashing_sha256",
-            "tags": [
-                "administrator"
-            ],
-            "limits": {}
-        },
-        {
             "name": "guest",
             "password_hash": "bmBffc+PFIuse/DHlxV1/Oo2lJR+AdHkIYtOT6CTy1R3ucB1",
             "hashing_algorithm": "rabbit_password_hashing_sha256",
@@ -31,13 +22,6 @@
     "permissions": [
         {
             "user": "guest",
-            "vhost": "/",
-            "configure": ".*",
-            "write": ".*",
-            "read": ".*"
-        },
-        {
-            "user": "test",
             "vhost": "/",
             "configure": ".*",
             "write": ".*",

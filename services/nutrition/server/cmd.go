@@ -1,17 +1,16 @@
-package main
+package nutrition
 
 import (
 	"context"
+	"github.com/kirvader/BodyController/services/nutrition/server/source"
 	"log"
-
-	"github.com/kirvader/BodyController/services/nutrition/server/src"
 )
 
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	if err := src.Serve(ctx); err != nil {
+	if err := source.serve(ctx); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
 }

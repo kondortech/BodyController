@@ -21,11 +21,9 @@ generate-all-protos: generate-output-openapi-directory
 	done
 
 pack-monorepo-in-docker: generate-all-protos
-	sudo docker build . -t body-controller-monorepo
+	sudo docker build -t kirvader/body-controller:latest .
+
+push-monorepo-image-to-hub: pack-monorepo-in-docker
+	sudo docker push kirvader/body-controller:latest
 
 .PHONY: pack-monorepo-in-docker generate-all-protos generate-output-openapi-directory
-
-# protoc -I=. services/nutrition/proto/api.proto     --grpc-web_out=import_style=typescript,mode=grpcweb:generated
-
-
-# protoc --proto_path=/home/kir/BodyController --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=./generated /home/kir/BodyController/services/nutrition/proto/api.proto

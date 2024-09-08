@@ -4,17 +4,26 @@ import (
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
+	"io"
 	"strings"
 )
 
-func EncodeToBase64(v interface{}) (string, error) {
+func EncodeToBase64(v interface{}) (encoded string, err error) {
 	var buf bytes.Buffer
 	encoder := base64.NewEncoder(base64.StdEncoding, &buf)
-	err := json.NewEncoder(encoder).Encode(v)
+	defer func(encoder io.WriteCloser) {
+		encoderCloseErr := encoder.Close()
+		if encoderCloseErr != nil {
+			err = errors.Join(err, encoderCloseErr)
+		}
+	}(encoder)
+
+	err = json.NewEncoder(encoder).Encode(v)
 	if err != nil {
 		return "", err
 	}
-	encoder.Close()
+
 	return buf.String(), nil
 }
 
