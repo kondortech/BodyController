@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rabbitmq-connectivity-config-map
+data:
+  host: "rabbitmq-cluster.rabbitmq-ns"
+  port: "5672"

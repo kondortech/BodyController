@@ -25,7 +25,7 @@ func MacrosFromProto(protoEntity *pbNutrition.Macros) (*Macros, error) {
 		return nil, ErrNilInstance
 	}
 	return &Macros{
-		Proteins: float32(protoEntity.GetProteins()),
+		Proteins: protoEntity.GetProteins(),
 		Carbs:    float32(protoEntity.GetCarbs()),
 		Fats:     float32(protoEntity.GetFats()),
 		Calories: float32(protoEntity.GetCalories()),

@@ -1,109 +1,58 @@
 package main
 
 import (
-	"bufio"
+	"context"
 	"fmt"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"log"
-	"os"
-	"reflect"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+
+	pb "github.com/kirvader/BodyController/services/nutrition/proto"
 )
 
-func shagram(s string) []int {
-	result := make([]int, 26)
-	for i := range s {
-		result[int(s[i])-int('a')]++
-	}
-	return result
-}
-
-func kShagram(s string, k int) []int {
-	shagram0 := shagram(s)
-	shagramk := make([]int, 26)
-	for i := range shagram0 {
-		shagramk[(i+k)%26] = shagram0[i]
-	}
-	return shagramk
-}
-
-func getWeight(s string) int {
-	r := shagram(s)
-	result := 0
-	for i, value := range r {
-		result += i * value
-	}
-	return result
-}
-
 func main() {
-	file, err := os.Open("selected_strings.txt")
+	conn, err := grpc.Dial("0.0.0.0:8000", grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("did not connect: %v", err)
 	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
 	defer func() {
-		if err := scanner.Err(); err != nil {
-			log.Fatal(err)
+		err := conn.Close()
+		if err != nil {
+			fmt.Println("could not close connection: ", err)
 		}
 	}()
-	// optionally, resize scanner's capacity for lines over 64K, see next example
-	a := make([]string, 0)
-	for scanner.Scan() {
-		cur := scanner.Text()
-		a = append(a, cur)
+	client := pb.NewNutritionClient(conn)
+
+	resp, err := client.ListIngredients(context.Background(), &pb.ListIngredientsRequest{
+		PageSize:  20,
+		PageToken: nil,
+	})
+	if err != nil {
+		log.Printf("error: %v", err)
+		return
 	}
-	// fmt.Println(a)
-	fmt.Println(kShagram("gather", 13))
-	fmt.Println(shagram("urgent"))
-	fmt.Println(reflect.DeepEqual(kShagram("gather", 13), shagram("urgent")))
+	log.Printf("response got: %v", resp)
 
-	for k := 1; k <= 26; k++ {
-		if reflect.DeepEqual(kShagram("accepts", k), shagram("courage")) {
-			fmt.Println("true: ", k)
-		}
+	id := primitive.NewObjectID()
+	resp2, err2 := client.CreateIngredient(context.Background(), &pb.CreateIngredientRequest{
+		Entity: &pb.Ingredient{
+			Id:        id.Hex(),
+			Name:      "cucumber",
+			ImagePath: nil,
+			MacrosNormalizedTo100G: &pb.Macros{
+				Calories: 10,
+				Proteins: 2,
+				Carbs:    2,
+				Fats:     2.3,
+			},
+		},
+	})
+
+	if err2 != nil {
+		log.Printf("error: %v", err)
+		return
 	}
-	fmt.Println("false")
-
-	fmt.Println(kShagram("while", 4))
-
-	maxWeightString := "a"
-	for _, item := range a {
-		if reflect.DeepEqual(kShagram(item, 4), (shagram("while"))) {
-			fmt.Println(item)
-		}
-		if len(item) != 10 {
-			continue
-		}
-
-		if getWeight(maxWeightString) < getWeight(item) {
-			maxWeightString = item
-		}
-	}
-	fmt.Println(maxWeightString, getWeight(maxWeightString))
-
-	maxWeightString = "a"
-	for i := range a {
-		for j := range a {
-			if i >= j {
-				continue
-			}
-			if len(a[i]) != len(a[j]) {
-				continue
-			}
-			for k := 0; k < 26; k++ {
-				if reflect.DeepEqual(kShagram(a[i], k), shagram(a[j])) {
-					if getWeight(a[i]) > getWeight(maxWeightString) {
-						maxWeightString = a[i]
-					}
-					if getWeight(a[j]) > getWeight(maxWeightString) {
-						maxWeightString = a[j]
-					}
-					break
-				}
-			}
-		}
-	}
-	fmt.Println(getWeight(maxWeightString))
-	fmt.Println(maxWeightString)
+	log.Printf("response got: %v", resp2)
 }

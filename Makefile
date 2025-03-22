@@ -20,10 +20,15 @@ generate-all-protos: generate-output-openapi-directory
 			--openapiv2_out generated/openapiv2; \
 	done
 
-pack-monorepo-in-docker: generate-all-protos
-	sudo docker build -t kirvader/body-controller:latest .
+pack-monorepo-for-google-artifactory-registry: generate-all-protos
+	docker build -t body-controller-monorepo .
+	docker tag body-controller-monorepo europe-west10-docker.pkg.dev/weighty-nation-434312-k6/body-controller-monorepo/test-image
+	docker push europe-west10-docker.pkg.dev/weighty-nation-434312-k6/body-controller-monorepo/test-image
 
-push-monorepo-image-to-hub: pack-monorepo-in-docker
-	sudo docker push kirvader/body-controller:latest
+load-monorepo-docker-image-to-kind: generate-all-protos
+	docker build -t body-controller-monorepo .
+	kind load docker-image body-controller-monorepo --name body-controller-local-dev
 
-.PHONY: pack-monorepo-in-docker generate-all-protos generate-output-openapi-directory
+
+
+.PHONY: pack-monorepo-for-google-artifactory-registry generate-all-protos generate-output-openapi-directory

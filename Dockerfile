@@ -16,5 +16,3 @@ COPY --from=builder /app/run /app/run
 EXPOSE 8000
 
 ENTRYPOINT [ "/app/run" ]
-
-RUN ["nutrition"]

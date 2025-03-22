@@ -1,0 +1,74 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: nutrition-server
+    labels:
+        app: nutrition-server
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: nutrition-server
+    template:
+        metadata:
+            labels:
+                app: nutrition-server
+        spec:
+            containers:
+                - name: nutrition-server-container
+                  image: body-controller-monorepo
+                  args: ["nutrition"]
+                  imagePullPolicy: Never
+                  ports:
+                      - containerPort: 8000
+                  env:
+                      - name: SERVICE_PORT
+                        value: "8000"
+                      - name: MONGODB_HOST
+                        valueFrom:
+                          configMapKeyRef:
+                            name: mongodb-connectivity-config-map
+                            key: host
+                      - name: MONGODB_PORT
+                        valueFrom:
+                          configMapKeyRef:
+                            name: mongodb-connectivity-config-map
+                            key: port
+                      - name: MONGODB_USERNAME
+                        valueFrom:
+                          secretKeyRef:
+                            name: mongodb-ext-secrets
+                            key: MONGO_INITDB_ROOT_USERNAME
+                      - name: MONGODB_PASSWORD
+                        valueFrom:
+                          secretKeyRef:
+                            name: mongodb-ext-secrets
+                            key: MONGO_INITDB_ROOT_PASSWORD
+                      - name: RABBITMQ_HOST
+                        valueFrom:
+                          configMapKeyRef:
+                            name: rabbitmq-connectivity-config-map
+                            key: host
+                      - name: RABBITMQ_PORT
+                        valueFrom:
+                          configMapKeyRef:
+                            name: rabbitmq-connectivity-config-map
+                            key: port
+                      - name: RABBITMQ_USERNAME
+                        valueFrom:
+                          secretKeyRef:
+                            name: rabbitmq-ext-secrets
+                            key: username
+                      - name: RABBITMQ_PASSWORD
+                        valueFrom:
+                          secretKeyRef:
+                            name: rabbitmq-ext-secrets
+                            key: password
+                  resources:
+                    requests:
+                      memory: "64Mi"
+                      cpu: "100m"
+                    limits:
+                      memory: "128Mi"
+                      cpu: "100m"

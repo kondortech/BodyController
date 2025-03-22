@@ -32,11 +32,22 @@ func (svc *service) CreateIngredient(ctx context.Context, req *pbNutrition.Creat
 		return nil, err
 	}
 
-	err = svc.rabbitMQConn.PublishWithContext(ctx,
+	rabbitmqChannel, err := svc.rabbitMQConn.Channel()
+	if err != nil {
+		return nil, fmt.Errorf("failed to open rabbitmq channel")
+	}
+	defer func() {
+		err := rabbitmqChannel.Close()
+		if err != nil {
+			fmt.Println("couldn't close rabbitmq channel: ", err)
+		}
+	}()
+
+	err = rabbitmqChannel.PublishWithContext(ctx,
 		"",           // exchange
 		"ingredient", // routing key
 		false,        // mandatory
-		false,        // immediate
+		true,         // immediate
 		amqp.Publishing{
 			ContentType: "application/json",
 			Type:        OperationCreate,
@@ -49,7 +60,7 @@ func (svc *service) CreateIngredient(ctx context.Context, req *pbNutrition.Creat
 	log.Println("published CREATE event with id: ", req.GetEntity().GetId())
 
 	return &pbNutrition.CreateIngredientResponse{
-		EntityId: req.Entity.Id,
+		EntityId: req.GetEntity().GetId(),
 	}, nil
 }
 
@@ -63,7 +74,18 @@ func (svc *service) DeleteIngredient(ctx context.Context, req *pbNutrition.Delet
 		return nil, err
 	}
 
-	err = svc.rabbitMQConn.PublishWithContext(ctx,
+	rabbitmqChannel, err := svc.rabbitMQConn.Channel()
+	if err != nil {
+		return nil, fmt.Errorf("failed to open rabbitmq channel")
+	}
+	defer func() {
+		err := rabbitmqChannel.Close()
+		if err != nil {
+			fmt.Println("couldn't close rabbitmq channel: ", err)
+		}
+	}()
+
+	err = rabbitmqChannel.PublishWithContext(ctx,
 		"",           // exchange
 		"ingredient", // routing key
 		false,        // mandatory

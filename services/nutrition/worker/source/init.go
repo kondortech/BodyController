@@ -5,35 +5,30 @@ import (
 	"errors"
 	"fmt"
 	"github.com/kirvader/BodyController/pkg/utils"
-	pb "github.com/kirvader/BodyController/services/nutrition/proto"
-	amqp "github.com/rabbitmq/amqp091-go"
 	"github.com/spf13/cobra"
 	"go.mongodb.org/mongo-driver/bson"
+	"log"
+
+	amqp "github.com/rabbitmq/amqp091-go"
 	"go.mongodb.org/mongo-driver/mongo"
-	mongoOptions "go.mongodb.org/mongo-driver/mongo/options"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
-	"net"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"golang.org/x/sync/errgroup"
 )
 
 var Cmd = &cobra.Command{
-	Use:   "nutrition",
-	Short: "Runs nutrition server with variables from env",
+	Use:   "nutrition-worker",
+	Short: "Runs nutrition server worker",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return serveFromEnv(cmd.Context())
 	},
 }
 
 func serveFromEnv(ctx context.Context) error {
-	servicePort, err := utils.LookupEnv("SERVICE_PORT")
-	if err != nil {
-		return err
-	}
-
 	mongodbHost, err := utils.LookupEnv("MONGODB_HOST")
 	if err != nil {
 		return err
 	}
+
 	mongodbPort, err := utils.LookupEnv("MONGODB_PORT")
 	if err != nil {
 		return err
@@ -43,6 +38,7 @@ func serveFromEnv(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+
 	mongodbPassword, err := utils.LookupEnv("MONGODB_PASSWORD")
 	if err != nil {
 		return err
@@ -66,28 +62,22 @@ func serveFromEnv(ctx context.Context) error {
 		return err
 	}
 
-	return serve(ctx, servicePort, mongodbHost, mongodbPort, mongodbUsername, mongodbPassword, rabbitMQHost, rabbitMQPort, rabbitMQUser, rabbitMQPassword)
+	return serve(ctx, mongodbHost, mongodbPort, mongodbUsername, mongodbPassword, rabbitMQHost, rabbitMQPort, rabbitMQUser, rabbitMQPassword)
 }
 
-type service struct {
+type worker struct {
 	mongoClient  *mongo.Client
 	rabbitMQConn *amqp.Connection
-
-	pb.UnimplementedNutritionServer
 }
 
-// TODO refactor used components
 func serve(ctx context.Context,
-	servicePort,
 	mongodbHost, mongodbPort, mongodbUsername, mongodbPassword,
 	rabbitmqHost, rabbitmqPort, rabbitmqUsername, rabbitmqPassword string) (err error) {
+	// Use the SetServerAPIOptions() method to set the version of the Stable API on the client
+	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
 
-	opts := mongoOptions.Client().
-		ApplyURI(fmt.Sprintf("mongodb://%s:%s/", mongodbHost, mongodbPort)).
-		// Use the SetServerAPIOptions() method to set the version of the Stable API on the client
-		SetServerAPIOptions(mongoOptions.ServerAPI(mongoOptions.ServerAPIVersion1))
-	// TODO add auth
-
+	mongoUri := fmt.Sprintf("mongodb://%s:%s@%s:%s/", mongodbUsername, mongodbPassword, mongodbHost, mongodbPort)
+	opts := options.Client().ApplyURI(mongoUri).SetServerAPIOptions(serverAPI)
 	// Create a new client and connect to the server
 	mongoClient, err := mongo.Connect(ctx, opts)
 	if err != nil {
@@ -115,21 +105,52 @@ func serve(ctx context.Context,
 		}
 	}()
 
-	fmt.Println("local addr mq: ", rabbitmqConn.LocalAddr())
-	fmt.Println("remote addr mq: ", rabbitmqConn.RemoteAddr())
-
-	svc := &service{
+	workerService := &worker{
 		mongoClient:  mongoClient,
 		rabbitMQConn: rabbitmqConn,
 	}
 
-	grpcServer := grpc.NewServer()
-	pb.RegisterNutritionServer(grpcServer, svc)
-	reflection.Register(grpcServer)
-
-	listener, err := net.Listen("tcp", fmt.Sprintf(":%s", servicePort))
+	ingredientMQChannel, err := workerService.rabbitMQConn.Channel()
 	if err != nil {
-		return fmt.Errorf("failed to start listening on %q: %w", fmt.Sprintf(":%s", servicePort), err)
+		return fmt.Errorf("failed to open channel: %s", err)
 	}
-	return grpcServer.Serve(listener)
+	defer func() {
+		closeErr := ingredientMQChannel.Close()
+		if closeErr != nil {
+			err = errors.Join(err, fmt.Errorf("failed to close rabbitmq channel: %w", closeErr))
+		}
+	}()
+
+	ingredientConsumer, err := ingredientMQChannel.ConsumeWithContext(
+		ctx,
+		"ingredient",
+		"",
+		true,
+		false,
+		false,
+		false,
+		nil)
+	if err != nil {
+		return fmt.Errorf("failed to create consumer for ingredient: %s", err)
+	}
+	fmt.Println("worker is initialized and consumes ingredient messages")
+
+	eg, egCtx := errgroup.WithContext(ctx)
+	eg.Go(func() error {
+		// TODO make this parallel with pool
+		for {
+			select {
+			case item := <-ingredientConsumer:
+				err := ProcessIngredientOperation(ctx, mongoClient, item)
+				if err != nil {
+					log.Printf("ingredient operation processing failed: %v", err)
+					return err
+				}
+			case <-egCtx.Done():
+				log.Print("context canceled")
+				return nil
+			}
+		}
+	})
+	return eg.Wait()
 }

@@ -27,7 +27,18 @@ func (svc *service) CreateRecipe(ctx context.Context, req *pbNutrition.CreateRec
 		return nil, err
 	}
 
-	err = svc.rabbitMQConn.PublishWithContext(ctx,
+	rabbitmqChannel, err := svc.rabbitMQConn.Channel()
+	if err != nil {
+		return nil, fmt.Errorf("failed to open rabbitmq channel")
+	}
+	defer func() {
+		err := rabbitmqChannel.Close()
+		if err != nil {
+			fmt.Println("couldn't close rabbitmq channel: ", err)
+		}
+	}()
+
+	err = rabbitmqChannel.PublishWithContext(ctx,
 		"",       // exchange
 		"recipe", // routing key
 		false,    // mandatory
@@ -58,7 +69,18 @@ func (svc *service) DeleteRecipe(ctx context.Context, req *pbNutrition.DeleteRec
 		return nil, err
 	}
 
-	err = svc.rabbitMQConn.PublishWithContext(ctx,
+	rabbitmqChannel, err := svc.rabbitMQConn.Channel()
+	if err != nil {
+		return nil, fmt.Errorf("failed to open rabbitmq channel")
+	}
+	defer func() {
+		err := rabbitmqChannel.Close()
+		if err != nil {
+			fmt.Println("couldn't close rabbitmq channel: ", err)
+		}
+	}()
+
+	err = rabbitmqChannel.PublishWithContext(ctx,
 		"",       // exchange
 		"recipe", // routing key
 		false,    // mandatory
